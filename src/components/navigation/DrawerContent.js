@@ -2,10 +2,10 @@ import {
     DrawerContentScrollView, DrawerItem,
     DrawerItemList,
 } from '@react-navigation/drawer';
-import {colors, drawerIcons} from "../constants/styles";
+import {colors, drawerIcons} from "../../constants/styles";
 import {StyleSheet} from "react-native";
-import {horizontalScale, moderateScale} from "../utils/metrics";
-import DrawerIcon from "../UI/DrawerIcon";
+import {horizontalScale, moderateScale} from "../../utils/metrics";
+import DrawerIcon from "./DrawerIcon";
 import {DrawerActions} from "@react-navigation/native";
 
 
@@ -16,7 +16,12 @@ const DrawerCustomContent = (props) => {
                 label={"LinguaLib"}
                 onPress={() => props.navigation.dispatch(DrawerActions.closeDrawer())}
                 icon={({color, focused}) =>
-                    <DrawerIcon icon={drawerIcons.header} size={moderateScale(32)} color={color} focused={focused}/>
+                    <DrawerIcon
+                        icon={drawerIcons.header}
+                        size={moderateScale(32)}
+                        color={color}
+                        focused={focused}
+                    />
                 }
                 inactiveBackgroundColor={colors.primary100}
                 inactiveTintColor={colors.textPrimary100}
@@ -35,7 +40,6 @@ const styles = StyleSheet.create({
         marginHorizontal: 0,
         borderRadius: 0,
         marginTop: 0,
-        paddingLeft: horizontalScale(11),
     },
     scrollView: {
         paddingTop: 0,
@@ -43,6 +47,6 @@ const styles = StyleSheet.create({
     label: {
         fontSize: moderateScale(24),
         fontWeight: "bold",
-        marginLeft: -horizontalScale(15)
+        marginLeft: -horizontalScale(10) // Couldn't find way to reduce margin between icon and label
     }
 });

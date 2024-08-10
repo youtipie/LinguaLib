@@ -1,12 +1,12 @@
 import {NavigationContainer} from "@react-navigation/native";
 import {createDrawerNavigator} from "@react-navigation/drawer";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
-import {Pressable, StatusBar, View} from "react-native";
+import {Pressable, StatusBar} from "react-native";
 import ReadingNow from "./src/screens/ReadingNow";
-import DrawerCustomContent from "./src/components/DrawerContent";
+import DrawerCustomContent from "./src/components/navigation/DrawerContent";
 import {horizontalScale, moderateScale} from "./src/utils/metrics";
 import {colors, drawerIcons} from "./src/constants/styles";
-import DrawerIcon from "./src/UI/DrawerIcon";
+import DrawerIcon from "./src/components/navigation/DrawerIcon";
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -35,8 +35,7 @@ function DrawerNavigation() {
                 headerLeft: () =>
                     <Pressable
                         style={{
-                            paddingLeft: horizontalScale(20),
-                            paddingRight: horizontalScale(5),
+                            paddingLeft: horizontalScale(5), // Maybe remove?
                         }}
                         onPress={() => navigation.toggleDrawer()}
                     >
@@ -71,7 +70,6 @@ function DrawerNavigation() {
                 drawerItemStyle: {
                     marginHorizontal: 0,
                     marginVertical: 0,
-                    paddingLeft: horizontalScale(15),
                 },
                 drawerStyle: {
                     backgroundColor: colors.primary200,
@@ -86,7 +84,12 @@ function DrawerNavigation() {
                     options={{
                         title: screen.title,
                         drawerIcon: ({color, focused}) => (
-                            <DrawerIcon icon={screen.icon} size={moderateScale(24)} color={color} focused={focused}/>
+                            <DrawerIcon
+                                icon={screen.icon}
+                                size={moderateScale(24)}
+                                color={color}
+                                focused={focused}
+                            />
                         ),
                     }}
                 />
