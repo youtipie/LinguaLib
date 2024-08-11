@@ -1,3 +1,4 @@
+import {useLayoutEffect} from 'react';
 import {View, StyleSheet, Text} from "react-native";
 import {colors, fonts} from "../constants/styles";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";

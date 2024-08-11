@@ -1,4 +1,6 @@
 import BookList from "../components/BookList";
+import useHeaderSearch from "../hooks/useHeaderSearch";
+import {useState} from "react";
 
 const DummyBooks = [
     {
@@ -24,9 +26,12 @@ const DummyBooks = [
     },
 ];
 
-const FinishedReading = () => {
+const FinishedReading = ({navigation}) => {
+    const [books, setBooks] = useState(DummyBooks);
+    useHeaderSearch({navigation, books: DummyBooks, setBooks});
+
     return (
-        <BookList books={DummyBooks}/>
+        <BookList books={books}/>
     );
 };
 

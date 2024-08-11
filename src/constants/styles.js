@@ -11,6 +11,7 @@ import {
 export const colors = {
     primary100: "#1C1C1C",
     primary200: "#2C2C2C",
+    primary300: "#6D6D6D",
     textPrimary100: "#E0E0E0",
     textPrimary200: "#B0B0B0",
     textAccent100: "#757575",

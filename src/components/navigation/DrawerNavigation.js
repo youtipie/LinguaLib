@@ -7,6 +7,7 @@ import ReadingNow from "../../screens/ReadingNow";
 import {createDrawerNavigator} from "@react-navigation/drawer";
 import FinishedReading from "../../screens/FinishedReading";
 import About from "../../screens/About";
+import headerMenuButton from "./HeaderMenuButton";
 
 const Drawer = createDrawerNavigator();
 
@@ -22,7 +23,7 @@ const DrawerNavigation = () => {
     return (
         <Drawer.Navigator
             drawerContent={(props) => <DrawerCustomContent {...props} />}
-            screenOptions={({navigation}) => ({
+            screenOptions={() => ({
                 headerStyle: {
                     backgroundColor: colors.primary100,
                 },
@@ -30,35 +31,10 @@ const DrawerNavigation = () => {
                     fontSize: moderateScale(24),
                     fontFamily: fonts.primaryBold,
                 },
-                headerLeft: () =>
-                    <Pressable
-                        style={{
-                            height: "100%", // More space, so user can't miss the button
-                            justifyContent: "center",
-                            paddingLeft: horizontalScale(5), // Maybe remove?
-                        }}
-                        onPress={() => navigation.toggleDrawer()}
-                    >
-                        <DrawerIcon
-                            icon={drawerIcons.openDrawer}
-                            size={moderateScale(24)}
-                            color={colors.textPrimary100}
-                        />
-                    </Pressable>,
-                headerRight: () =>
-                    <Pressable
-                        style={{
-                            paddingRight: horizontalScale(20),
-                        }}
-                        onPress={() => {
-                        }}
-                    >
-                        <DrawerIcon
-                            icon={drawerIcons.search}
-                            size={moderateScale(24)}
-                            color={colors.textPrimary100}
-                        />
-                    </Pressable>,
+                headerTitleContainerStyle: {
+                    width: "100%"
+                },
+                headerLeft: headerMenuButton,
                 headerTintColor: colors.textPrimary100,
                 drawerActiveBackgroundColor: "transparent",
                 drawerActiveTintColor: colors.success100,
