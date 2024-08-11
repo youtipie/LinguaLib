@@ -5,12 +5,13 @@ import {Pressable} from "react-native";
 import DrawerIcon from "./DrawerIcon";
 import ReadingNow from "../../screens/ReadingNow";
 import {createDrawerNavigator} from "@react-navigation/drawer";
+import FinishedReading from "../../screens/FinishedReading";
 
 const Drawer = createDrawerNavigator();
 
 const drawerScreens = [
     {name: 'ReadingNow', title: 'Reading Now', icon: drawerIcons.reading, component: ReadingNow},
-    {name: 'Finished', title: 'Finished reading', icon: drawerIcons.finished, component: ReadingNow},
+    {name: 'Finished', title: 'Finished reading', icon: drawerIcons.finished, component: FinishedReading},
     {name: 'Folders', title: 'Folders', icon: drawerIcons.folders, component: ReadingNow},
     {name: 'Settings', title: 'Settings', icon: drawerIcons.settings, component: ReadingNow},
     {name: 'About', title: 'About', icon: drawerIcons.about, component: ReadingNow},

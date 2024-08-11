@@ -1,7 +1,4 @@
-import {StyleSheet, FlatList} from "react-native";
-import {colors} from "../constants/styles";
-import BookCard from "../components/BookCard";
-import {verticalScale} from "../utils/metrics";
+import BookList from "../components/BookList";
 
 const DummyBooks = [
     {
@@ -57,25 +54,9 @@ const DummyBooks = [
 
 const ReadingNow = () => {
     return (
-        <FlatList
-            style={styles.root}
-            data={DummyBooks}
-            keyExtractor={item => item.id}
-            numColumns={2}
-            renderItem={(itemData) => <BookCard {...itemData.item}/>}
-            contentContainerStyle={styles.contentContainer}
-        />
+        <BookList books={DummyBooks}/>
     );
 };
 
 export default ReadingNow;
 
-const styles = StyleSheet.create({
-    root: {
-        backgroundColor: colors.primary200,
-    },
-    contentContainer: {
-        marginHorizontal: "auto",
-        paddingVertical: verticalScale(5),
-    }
-});
