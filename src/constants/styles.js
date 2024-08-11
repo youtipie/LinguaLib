@@ -20,6 +20,11 @@ export const colors = {
     accent100: "#BA5BDB"
 }
 
+export const fonts = {
+    primaryRegular: "montserrat-regular",
+    primaryBold: "montserrat-bold",
+}
+
 export const drawerIcons = {
     openDrawer: faBars,
     header: faBookOpen,

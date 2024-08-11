@@ -2,7 +2,7 @@ import {
     DrawerContentScrollView, DrawerItem,
     DrawerItemList,
 } from '@react-navigation/drawer';
-import {colors, drawerIcons} from "../../constants/styles";
+import {colors, drawerIcons, fonts} from "../../constants/styles";
 import {StyleSheet} from "react-native";
 import {horizontalScale, moderateScale} from "../../utils/metrics";
 import DrawerIcon from "./DrawerIcon";
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     },
     label: {
         fontSize: moderateScale(24),
-        fontWeight: "bold",
+        fontFamily: fonts.primaryBold,
         marginLeft: -horizontalScale(10) // Couldn't find way to reduce margin between icon and label
     }
 });

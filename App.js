@@ -5,8 +5,11 @@ import {Pressable, StatusBar} from "react-native";
 import ReadingNow from "./src/screens/ReadingNow";
 import DrawerCustomContent from "./src/components/navigation/DrawerContent";
 import {horizontalScale, moderateScale} from "./src/utils/metrics";
-import {colors, drawerIcons} from "./src/constants/styles";
+import {colors, drawerIcons, fonts} from "./src/constants/styles";
 import DrawerIcon from "./src/components/navigation/DrawerIcon";
+import * as SplashScreen from "expo-splash-screen";
+import {useFonts} from "expo-font";
+import {useEffect} from "react";
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -19,6 +22,8 @@ const drawerScreens = [
     {name: 'About', title: 'About', icon: drawerIcons.about, component: ReadingNow},
 ];
 
+SplashScreen.preventAutoHideAsync();
+
 function DrawerNavigation() {
     return (
         <Drawer.Navigator
@@ -26,11 +31,10 @@ function DrawerNavigation() {
             screenOptions={({navigation}) => ({
                 headerStyle: {
                     backgroundColor: colors.primary100,
-
                 },
                 headerTitleStyle: {
-                    fontWeight: "bold",
-                    fontSize: moderateScale(24)
+                    fontSize: moderateScale(24),
+                    fontFamily: fonts.primaryBold,
                 },
                 headerLeft: () =>
                     <Pressable
@@ -65,6 +69,7 @@ function DrawerNavigation() {
                 drawerInactiveTintColor: colors.textPrimary100,
                 drawerLabelStyle: {
                     fontSize: moderateScale(20),
+                    fontFamily: fonts.primaryRegular,
                     marginLeft: -horizontalScale(10),
                 },
                 drawerItemStyle: {
@@ -99,6 +104,21 @@ function DrawerNavigation() {
 }
 
 export default function App() {
+    const [loaded, error] = useFonts({
+        [fonts.primaryRegular]: require('./assets/fonts/Montserrat-Regular.ttf'),
+        [fonts.primaryBold]: require('./assets/fonts/Montserrat-Bold.ttf'),
+    });
+
+    useEffect(() => {
+        if (loaded || error) {
+            SplashScreen.hideAsync();
+        }
+    }, [loaded, error]);
+
+    if (!loaded && !error) {
+        return null;
+    }
+
     return (
         <>
             <StatusBar style="light"/>
