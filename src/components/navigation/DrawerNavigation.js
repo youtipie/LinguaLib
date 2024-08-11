@@ -6,6 +6,7 @@ import DrawerIcon from "./DrawerIcon";
 import ReadingNow from "../../screens/ReadingNow";
 import {createDrawerNavigator} from "@react-navigation/drawer";
 import FinishedReading from "../../screens/FinishedReading";
+import About from "../../screens/About";
 
 const Drawer = createDrawerNavigator();
 
@@ -14,7 +15,7 @@ const drawerScreens = [
     {name: 'Finished', title: 'Finished reading', icon: drawerIcons.finished, component: FinishedReading},
     {name: 'Folders', title: 'Folders', icon: drawerIcons.folders, component: ReadingNow},
     {name: 'Settings', title: 'Settings', icon: drawerIcons.settings, component: ReadingNow},
-    {name: 'About', title: 'About', icon: drawerIcons.about, component: ReadingNow},
+    {name: 'About', title: 'About', icon: drawerIcons.about, component: About},
 ];
 
 const DrawerNavigation = () => {
