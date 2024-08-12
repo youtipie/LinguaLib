@@ -1,0 +1,1 @@
+export const buyMeACoffeeUrl = "https://buymeacoffee.com/youtipie";

@@ -1,4 +1,5 @@
 import {
+    faArrowLeft,
     faBars,
     faBookOpen,
     faBookOpenReader,
@@ -7,6 +8,7 @@ import {
     faFolder,
     faGear, faSearch
 } from "@fortawesome/free-solid-svg-icons";
+import {moderateScale} from "../utils/metrics";
 
 export const colors = {
     primary100: "#1C1C1C",
@@ -15,10 +17,13 @@ export const colors = {
     textPrimary100: "#E0E0E0",
     textPrimary200: "#B0B0B0",
     textAccent100: "#757575",
+    textAccent200: "#00BCD4",
     success100: "#00784D",
     success200: "#00D488",
+    success300: "#355449",
     statusBar: "#F3F3F3",
-    accent100: "#BA5BDB"
+    accent100: "#BA5BDB",
+    accent200: "#543765"
 }
 
 export const fonts = {
@@ -28,6 +33,7 @@ export const fonts = {
 
 export const drawerIcons = {
     openDrawer: faBars,
+    goBack: faArrowLeft,
     header: faBookOpen,
     search: faSearch,
     reading: faBookOpenReader,
@@ -36,3 +42,17 @@ export const drawerIcons = {
     settings: faGear,
     about: faExclamation,
 }
+
+export const headerStyle = {
+    headerStyle: {
+        backgroundColor: colors.primary100,
+    },
+    headerTitleStyle: {
+        fontSize: moderateScale(24),
+        fontFamily: fonts.primaryBold,
+    },
+    headerTitleContainerStyle: {
+        width: "100%",
+    },
+    headerTintColor: colors.textPrimary100,
+};

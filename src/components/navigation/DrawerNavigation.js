@@ -1,13 +1,13 @@
 import DrawerCustomContent from "./DrawerContent";
-import {colors, drawerIcons, fonts} from "../../constants/styles";
+import {colors, drawerIcons, fonts, headerStyle} from "../../constants/styles";
 import {horizontalScale, moderateScale} from "../../utils/metrics";
-import {Pressable} from "react-native";
 import DrawerIcon from "./DrawerIcon";
 import ReadingNow from "../../screens/ReadingNow";
 import {createDrawerNavigator} from "@react-navigation/drawer";
 import FinishedReading from "../../screens/FinishedReading";
 import About from "../../screens/About";
-import headerMenuButton from "./HeaderMenuButton";
+import Index from "../../screens/Settings";
+import HeaderButton from "./HeaderButton";
 
 const Drawer = createDrawerNavigator();
 
@@ -15,7 +15,7 @@ const drawerScreens = [
     {name: 'ReadingNow', title: 'Reading Now', icon: drawerIcons.reading, component: ReadingNow},
     {name: 'Finished', title: 'Finished reading', icon: drawerIcons.finished, component: FinishedReading},
     {name: 'Folders', title: 'Folders', icon: drawerIcons.folders, component: ReadingNow},
-    {name: 'Settings', title: 'Settings', icon: drawerIcons.settings, component: ReadingNow},
+    {name: 'Settings', title: 'Settings', icon: drawerIcons.settings, component: Index},
     {name: 'About', title: 'About', icon: drawerIcons.about, component: About},
 ];
 
@@ -23,19 +23,12 @@ const DrawerNavigation = () => {
     return (
         <Drawer.Navigator
             drawerContent={(props) => <DrawerCustomContent {...props} />}
-            screenOptions={() => ({
-                headerStyle: {
-                    backgroundColor: colors.primary100,
-                },
-                headerTitleStyle: {
-                    fontSize: moderateScale(24),
-                    fontFamily: fonts.primaryBold,
-                },
-                headerTitleContainerStyle: {
-                    width: "100%"
-                },
-                headerLeft: headerMenuButton,
-                headerTintColor: colors.textPrimary100,
+            screenOptions={({navigation}) => ({
+                ...headerStyle,
+                headerLeft: () => <HeaderButton
+                    onPress={() => navigation.toggleDrawer()}
+                    icon={drawerIcons.openDrawer}
+                />,
                 drawerActiveBackgroundColor: "transparent",
                 drawerActiveTintColor: colors.success100,
                 drawerInactiveTintColor: colors.textPrimary100,
