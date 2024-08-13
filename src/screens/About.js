@@ -1,5 +1,5 @@
 import {useLayoutEffect} from 'react';
-import {View, StyleSheet, Text} from "react-native";
+import {View, StyleSheet, Text, ScrollView} from "react-native";
 import {colors, fonts} from "../constants/styles";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {faBullseye, faCircleInfo, faClipboardList} from "@fortawesome/free-solid-svg-icons";
@@ -7,7 +7,7 @@ import {horizontalScale, moderateScale, verticalScale} from "../utils/metrics";
 
 const About = () => {
     return (
-        <View style={styles.root}>
+        <ScrollView style={styles.root}>
             <View style={styles.section}>
                 <View style={styles.titleWrapper}>
                     <FontAwesomeIcon
@@ -63,7 +63,7 @@ const About = () => {
                     catering to a variety of languages and dialects.
                 </Text>
             </View>
-        </View>
+        </ScrollView>
     );
 };
 
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     root: {
         flex: 1,
         backgroundColor: colors.primary200,
-        padding: moderateScale(15)
+        padding: moderateScale(15),
     },
     titleWrapper: {
         flexDirection: "row",

@@ -3,12 +3,13 @@ import {
     faBars,
     faBookOpen,
     faBookOpenReader,
-    faCheck,
+    faCheck, faCirclePlus, faEllipsis,
     faExclamation,
     faFolder,
-    faGear, faSearch
+    faGear, faSdCard, faSearch
 } from "@fortawesome/free-solid-svg-icons";
 import {moderateScale} from "../utils/metrics";
+import {faMinusSquare, faPenToSquare} from "@fortawesome/free-regular-svg-icons";
 
 export const colors = {
     primary100: "#1C1C1C",
@@ -23,7 +24,8 @@ export const colors = {
     success300: "#355449",
     statusBar: "#F3F3F3",
     accent100: "#BA5BDB",
-    accent200: "#543765"
+    accent200: "#543765",
+    menu100: "#333333"
 }
 
 export const fonts = {
@@ -56,3 +58,15 @@ export const headerStyle = {
     },
     headerTintColor: colors.textPrimary100,
 };
+
+export const folderIcons = {
+    rootFolder: faSdCard,
+    folder: faFolder,
+}
+
+export const commonIcons = {
+    addCircle: faCirclePlus,
+    minusSquare: faMinusSquare,
+    editSquare: faPenToSquare,
+    dotsHorizontal: faEllipsis,
+}

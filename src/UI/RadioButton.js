@@ -1,5 +1,5 @@
 import {View, StyleSheet, Text, Pressable} from "react-native";
-import {colors} from "../constants/styles";
+import {colors, fonts} from "../constants/styles";
 import {horizontalScale, moderateScale} from "../utils/metrics";
 
 const RadioButton = ({style, label, isSelected, onSelect}) => {
@@ -22,6 +22,7 @@ const styles = StyleSheet.create({
     },
     label: {
         color: colors.textPrimary200,
+        fontFamily: fonts.primaryRegular,
         fontSize: moderateScale(16),
         marginLeft: horizontalScale(5)
     },

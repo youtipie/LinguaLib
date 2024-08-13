@@ -4,6 +4,7 @@ import * as SplashScreen from "expo-splash-screen";
 import {useFonts} from "expo-font";
 import {useEffect} from "react";
 import Navigation from "./src/components/navigation/Navigation";
+import {MenuProvider} from "react-native-popup-menu";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -26,7 +27,9 @@ export default function App() {
     return (
         <>
             <StatusBar style="light"/>
-            <Navigation/>
+            <MenuProvider>
+                <Navigation/>
+            </MenuProvider>
         </>
     )
 }

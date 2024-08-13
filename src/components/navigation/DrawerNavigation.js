@@ -6,16 +6,17 @@ import ReadingNow from "../../screens/ReadingNow";
 import {createDrawerNavigator} from "@react-navigation/drawer";
 import FinishedReading from "../../screens/FinishedReading";
 import About from "../../screens/About";
-import Index from "../../screens/Settings";
 import HeaderButton from "./HeaderButton";
+import Folders from "../../screens/Folders";
+import Settings from "../../screens/Settings";
 
 const Drawer = createDrawerNavigator();
 
 const drawerScreens = [
     {name: 'ReadingNow', title: 'Reading Now', icon: drawerIcons.reading, component: ReadingNow},
     {name: 'Finished', title: 'Finished reading', icon: drawerIcons.finished, component: FinishedReading},
-    {name: 'Folders', title: 'Folders', icon: drawerIcons.folders, component: ReadingNow},
-    {name: 'Settings', title: 'Settings', icon: drawerIcons.settings, component: Index},
+    {name: 'Folders', title: 'Folders', icon: drawerIcons.folders, component: Folders},
+    {name: 'Settings', title: 'Settings', icon: drawerIcons.settings, component: Settings},
     {name: 'About', title: 'About', icon: drawerIcons.about, component: About},
 ];
 

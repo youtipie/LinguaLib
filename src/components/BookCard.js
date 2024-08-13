@@ -1,5 +1,5 @@
 import {View, StyleSheet, Image, Pressable, Text} from "react-native";
-import {colors} from "../constants/styles";
+import {colors, fonts} from "../constants/styles";
 import {horizontalScale, moderateScale, verticalScale} from "../utils/metrics";
 
 const BookCard = ({id, title, author, progress, coverUri}) => {
@@ -50,10 +50,12 @@ const styles = StyleSheet.create({
     title: {
         color: colors.textPrimary200,
         fontSize: moderateScale(16),
+        fontFamily: fonts.primaryRegular,
         marginBottom: verticalScale(5),
     },
     subtitle: {
         color: colors.textAccent100,
+        fontFamily: fonts.primaryRegular,
         fontSize: moderateScale(12),
     },
     progressBarWrapper: {
