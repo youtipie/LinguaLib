@@ -4,6 +4,7 @@ import SelectSettings from "../../screens/Settings/SelectSettings";
 import {drawerIcons, headerStyle} from "../../constants/styles";
 import {createStackNavigator} from "@react-navigation/stack";
 import HeaderButton from "./HeaderButton";
+import Details from "../../screens/Details";
 
 const Stack = createStackNavigator();
 
@@ -28,6 +29,10 @@ const Navigation = () => {
                 <Stack.Screen
                     name="SelectSettings"
                     component={SelectSettings}
+                />
+                <Stack.Screen
+                    name="Details"
+                    component={Details}
                 />
             </Stack.Navigator>
         </NavigationContainer>

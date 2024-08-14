@@ -3,10 +3,10 @@ import {
     faBars,
     faBookOpen,
     faBookOpenReader,
-    faCheck, faCirclePlus, faEllipsis,
+    faCheck, faCirclePlus, faEllipsis, faEllipsisVertical,
     faExclamation,
     faFolder,
-    faGear, faSdCard, faSearch
+    faGear, faPen, faRecycle, faSdCard, faSearch, faShareNodes, faTrashCan
 } from "@fortawesome/free-solid-svg-icons";
 import {moderateScale} from "../utils/metrics";
 import {faMinusSquare, faPenToSquare} from "@fortawesome/free-regular-svg-icons";
@@ -69,4 +69,18 @@ export const commonIcons = {
     minusSquare: faMinusSquare,
     editSquare: faPenToSquare,
     dotsHorizontal: faEllipsis,
+    dotsVertical: faEllipsisVertical,
+    check: faCheck,
+    edit: faPen,
+    share: faShareNodes,
+    restore: faRecycle,
+    trash: faTrashCan
+}
+
+export const commonStyles = {
+    detailText: {
+        fontFamily: fonts.primaryRegular,
+        fontSize: moderateScale(16),
+        color: colors.textPrimary200,
+    }
 }

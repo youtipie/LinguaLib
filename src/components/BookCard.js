@@ -1,14 +1,17 @@
 import {View, StyleSheet, Image, Pressable, Text} from "react-native";
 import {colors, fonts} from "../constants/styles";
 import {horizontalScale, moderateScale, verticalScale} from "../utils/metrics";
+import {useNavigation} from "@react-navigation/native";
 
 const BookCard = ({id, title, author, progress, coverUri}) => {
+    const navigation = useNavigation();
+
     function handleImgPress() {
         //     TODO: Go to reading book
     }
 
     function handleCardPress() {
-        //     TODO: Go to book details screen
+        navigation.navigate("Details", {bookId: id});
     }
 
     const progressWidthStyle = {width: `${Math.trunc(progress * 100)}%`};

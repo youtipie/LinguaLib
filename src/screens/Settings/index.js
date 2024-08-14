@@ -23,7 +23,7 @@ const Settings = ({navigation}) => {
     }
 
     return (
-        <ScrollView style={styles.root}>
+        <ScrollView contentContainerStyle={styles.root}>
             <Section title="General">
                 <SectionItemWithSwitch
                     defaultValue={false}
@@ -114,7 +114,7 @@ export default Settings;
 
 const styles = StyleSheet.create({
     root: {
-        flex: 1,
+        flexGrow: 1,
         backgroundColor: colors.primary200,
         padding: moderateScale(15),
         paddingTop: 0,

@@ -1,4 +1,3 @@
-import {useLayoutEffect} from 'react';
 import {View, StyleSheet, Text, ScrollView} from "react-native";
 import {colors, fonts} from "../constants/styles";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
@@ -7,7 +6,7 @@ import {horizontalScale, moderateScale, verticalScale} from "../utils/metrics";
 
 const About = () => {
     return (
-        <ScrollView style={styles.root}>
+        <ScrollView contentContainerStyle={styles.root}>
             <View style={styles.section}>
                 <View style={styles.titleWrapper}>
                     <FontAwesomeIcon
@@ -71,7 +70,7 @@ export default About;
 
 const styles = StyleSheet.create({
     root: {
-        flex: 1,
+        flexGrow: 1,
         backgroundColor: colors.primary200,
         padding: moderateScale(15),
     },

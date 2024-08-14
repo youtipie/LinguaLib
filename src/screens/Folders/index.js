@@ -16,7 +16,7 @@ const Folders = () => {
     }
 
     return (
-        <ScrollView style={styles.root}>
+        <ScrollView contentContainerStyle={styles.root}>
             {mockFolderData.map((item) => (
                 <FolderCard
                     key={item.id}
@@ -34,7 +34,7 @@ const Folders = () => {
                         </View>
                     }
                     rightIcon={
-                        <FolderMenu folder={item}/>
+                        <FolderMenu folderId={item.id}/>
                     }
                 />
             ))}
@@ -63,7 +63,7 @@ export default Folders;
 
 const styles = StyleSheet.create({
     root: {
-        flex: 1,
+        flexGrow: 1,
         backgroundColor: colors.primary200,
         paddingHorizontal: moderateScale(15),
         paddingVertical: verticalScale(10),
