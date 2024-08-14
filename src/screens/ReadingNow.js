@@ -1,6 +1,6 @@
 import BookList from "../components/BookList";
 import useHeaderSearch from "../hooks/useHeaderSearch";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {mockBooks} from "../constants/other";
 
 

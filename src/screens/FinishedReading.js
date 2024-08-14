@@ -5,8 +5,8 @@ import {mockBooks} from "../constants/other";
 
 
 const FinishedReading = ({navigation}) => {
-    const [books, setBooks] = useState(mockBooks);
-    useHeaderSearch({navigation, books: mockBooks, setBooks});
+    const [books, setBooks] = useState(mockBooks.slice(0, 3));
+    useHeaderSearch({navigation, books: mockBooks.slice(0, 3), setBooks});
 
     return (
         <BookList books={books}/>
