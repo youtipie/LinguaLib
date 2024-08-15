@@ -1,5 +1,10 @@
 export const buyMeACoffeeUrl = "https://buymeacoffee.com/youtipie";
 
+export const mockFolderData = [
+    {id: 1, title: "Default folder", path: "/Downloads", isDefault: true},
+    {id: 2, title: "My books", path: "/Books", isDefault: false},
+]
+
 export const mockBooks = [
     {
         id: 1,

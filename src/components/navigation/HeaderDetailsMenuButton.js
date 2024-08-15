@@ -2,7 +2,7 @@ import {horizontalScale} from "../../utils/metrics";
 import {Pressable} from "react-native";
 import DetailsMenu from "../../screens/Details/components/DetailsMenu";
 
-const HeaderDetailsMenuButton = ({bookId}) => {
+const HeaderDetailsMenuButton = ({bookId, enterEditMode}) => {
     return (
         <Pressable
             style={{
@@ -11,6 +11,7 @@ const HeaderDetailsMenuButton = ({bookId}) => {
         >
             <DetailsMenu
                 bookId={bookId}
+                enterEditMode={enterEditMode}
             />
         </Pressable>
     );

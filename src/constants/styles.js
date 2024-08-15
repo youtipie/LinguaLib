@@ -2,8 +2,8 @@ import {
     faArrowLeft,
     faBars,
     faBookOpen,
-    faBookOpenReader,
-    faCheck, faCirclePlus, faEllipsis, faEllipsisVertical,
+    faBookOpenReader, faCaretDown, faCaretUp,
+    faCheck, faCheckCircle, faCirclePlus, faCircleXmark, faEllipsis, faEllipsisVertical,
     faExclamation,
     faFolder,
     faGear, faPen, faRecycle, faSdCard, faSearch, faShareNodes, faTrashCan
@@ -74,7 +74,11 @@ export const commonIcons = {
     edit: faPen,
     share: faShareNodes,
     restore: faRecycle,
-    trash: faTrashCan
+    trash: faTrashCan,
+    confirmCircle: faCheckCircle,
+    crossCircle: faCircleXmark,
+    optionsDown: faCaretDown,
+    optionsUp: faCaretUp,
 }
 
 export const commonStyles = {

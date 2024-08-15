@@ -19,7 +19,7 @@ const AnimatedTextExpand = ({startText, endText, containerStyle, textStyle, repl
             }).start();
         });
     };
-
+    // TODO: Different animation depending on replaceOriginalText
     // Wanted to animate only endText but have to animate whole text
     // because nested Text doesn't support changing opacity
     return (

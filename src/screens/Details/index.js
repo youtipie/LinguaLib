@@ -1,64 +1,159 @@
 import {ScrollView, View, StyleSheet, Image, Text, Pressable} from "react-native";
-import {mockBooks} from "../../constants/other";
-import {colors, commonIcons, commonStyles, drawerIcons, folderIcons, fonts} from "../../constants/styles";
+import {mockBooks, mockFolderData} from "../../constants/other";
+import {colors, commonIcons, commonStyles, folderIcons, fonts} from "../../constants/styles";
 import {horizontalScale, moderateScale, verticalScale} from "../../utils/metrics";
 import DetailsItem from "./components/DetailsItem";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import AnimatedTextExpand from "../../UI/AnimatedTextExpand";
-import {useLayoutEffect} from "react";
-import DrawerIcon from "../../components/navigation/DrawerIcon";
+import {useLayoutEffect, useState} from "react";
 import HeaderDetailsMenuButton from "../../components/navigation/HeaderDetailsMenuButton";
+import HeaderDetailsEditMenu from "./components/HeaderDetailsEditMenu";
+import minutesToTimeString from "../../utils/minutesToTimeString";
+import InputField from "../../UI/InputField";
+import FolderSelect from "./components/FolderSelect";
+import LanguageSelectMenu from "./components/LanguageSelectMenu";
 
 
-const Index = ({route, navigation}) => {
+const Details = ({route, navigation}) => {
     const {bookId} = route.params;
-    const book = mockBooks.find(book => book.id === bookId);
+
+    // Just mock data. Will remove later. Don't want to bother adding this to all books.
+    const [book, setBook] = useState({
+        ...mockBooks.find(book => book.id === bookId),
+        annotation: "Geralt is a Witcher, a man whose magic powers, enhanced by long training and a mysterious elixir, " +
+            "have made him a brilliant fighter and a merciless hunter. Yet he is no ordinary killer. His sole purpose: " +
+            "to destroy the monsters that plague the world.",
+        folder: mockFolderData[0],
+        language: "English",
+        timeSpent: 70,
+        page: 127,
+        totalPages: 924,
+        filename: "the-witcher.epub",
+    });
+
+    const [isEditing, setEditing] = useState(false);
+    const [form, setForm] = useState({
+        title: book.title,
+        author: book.author,
+        annotation: book.annotation,
+        language: book.language,
+        folder: book.folder
+    });
+
+    function updateForm(name, value) {
+        setForm(prevState => ({...prevState, [name]: value})
+        );
+    }
+
+    function submitForm() {
+        setBook(prevState => ({
+            ...prevState,
+            ...form,
+        }));
+        setEditing(false);
+    }
 
     useLayoutEffect(() => {
         navigation.setOptions({
             headerTitle: ({children, tintColor, style}) => (
                 <View style={{flexDirection: 'row', marginRight: -16}}>
                     <Text style={[{color: tintColor}, style]}>{children}</Text>
-                    <Pressable style={{marginLeft: "auto"}}>
-                        <Text style={[{color: colors.success100}, style]}>Read</Text>
-                    </Pressable>
+                    {
+                        !isEditing &&
+                        <Pressable style={{marginLeft: "auto"}}>
+                            <Text style={[{color: colors.success100}, style]}>Read</Text>
+                        </Pressable>
+                    }
                 </View>
             ),
-            headerRight: () => <HeaderDetailsMenuButton bookId={bookId}/>
+            headerRight: () => (
+                isEditing ?
+                    <HeaderDetailsEditMenu
+                        onCancel={() => setEditing(false)}
+                        onConfirm={submitForm}
+                    />
+                    :
+                    <HeaderDetailsMenuButton
+                        bookId={bookId}
+                        enterEditMode={() => setEditing(true)}
+                    />
+            )
+
         });
-    }, [navigation])
+    }, [navigation, isEditing, form])
 
     return (
         <ScrollView contentContainerStyle={styles.root}>
             <View style={styles.card}>
                 <View style={styles.posterWrapper}>
                     <Image style={styles.poster} source={{uri: book.coverUri}}/>
-                    <Text style={styles.title}>{book.title}</Text>
+                    <View style={styles.titleWrapper}>
+                        {
+                            isEditing ?
+                                <InputField
+                                    inputStyles={styles.title}
+                                    placeholder="Enter title"
+                                    defaultValue={book.title}
+                                    onChangeText={(value) => updateForm("title", value)}
+                                />
+                                :
+                                <Text style={styles.title}>{book.title}</Text>
+                        }
+                    </View>
                 </View>
                 <View style={styles.cardContent}>
                     <DetailsItem
                         title="Author"
                         content={book.author}
+                        isEditing={isEditing}
+                        defaultValue={book.author}
+                        onChangeText={(value) => updateForm("author", value)}
                     />
-                    <DetailsItem title="Annotation">
-                        <AnimatedTextExpand
-                            startText="Geralt is a Witcher, a man whose magic powers, enhanced by long training and a"
-                            endText=" mysterious elixir, have made him a brilliant fighter and a merciless hunter. Yet he is no ordinary killer. His sole purpose: to destroy the monsters that plague the world."
-                            replaceOriginalText={true}
-                            textStyle={commonStyles.detailText}
+                    {
+                        isEditing ?
+                            <DetailsItem
+                                title="Annotation"
+                                content={book.annotation}
+                                isEditing={isEditing}
+                                defaultValue={book.annotation}
+                                onChangeText={(value) => updateForm("annotation", value)}
+                            />
+                            :
+                            (
+                                book.annotation.length <= 100 ?
+                                    <DetailsItem
+                                        title="Annotation"
+                                        content={book.annotation}
+                                    />
+                                    :
+                                    <DetailsItem title="Annotation">
+                                        <AnimatedTextExpand
+                                            startText={book.annotation.slice(0, 100)}
+                                            endText={book.annotation.slice(100, book.annotation.length)}
+                                            replaceOriginalText={true}
+                                            textStyle={commonStyles.detailText}
+                                        />
+                                    </DetailsItem>
+                            )
+                    }
+                    {isEditing ?
+                        <LanguageSelectMenu
+                            defaultValue={book.language}
+                            onSelect={(value) => updateForm("language", value)}
                         />
-                    </DetailsItem>
-                    <DetailsItem
-                        title="Original language"
-                        content="English"
-                    />
+                        :
+                        <DetailsItem
+                            title="Original language"
+                            content={book.language}
+                        />
+                    }
                     <DetailsItem
                         title="Time spent reading"
-                        content="12.5 hours"
+                        content={minutesToTimeString(book.timeSpent)}
                     />
                     <DetailsItem
                         title="Reading progress"
-                        content="127 of 946 pages"
+                        content={`${book.page} of ${book.totalPages} pages`}
                     />
 
                     <DetailsItem title="Book location">
@@ -69,11 +164,18 @@ const Index = ({route, navigation}) => {
                                 size={moderateScale(16)}
                                 color={colors.textPrimary200}
                             />
-                            <AnimatedTextExpand
-                                startText="Default"
-                                endText=" => /Downloads/the-witcher.epub"
-                                textStyle={commonStyles.detailText}
-                            />
+                            {isEditing ?
+                                <FolderSelect
+                                    onSelect={(value) => updateForm("folder", value)}
+                                    defaultValue={book.folder}
+                                />
+                                :
+                                <AnimatedTextExpand
+                                    startText={book.folder.title}
+                                    endText={` => ${book.folder.path}/${book.filename}`}
+                                    textStyle={commonStyles.detailText}
+                                />
+                            }
                         </View>
                     </DetailsItem>
                 </View>
@@ -82,7 +184,7 @@ const Index = ({route, navigation}) => {
     );
 };
 
-export default Index;
+export default Details;
 
 const styles = StyleSheet.create({
     root: {
@@ -104,6 +206,9 @@ const styles = StyleSheet.create({
     poster: {
         height: moderateScale(365),
         objectFit: "contain"
+    },
+    titleWrapper: {
+        paddingHorizontal: moderateScale(10),
     },
     title: {
         fontFamily: fonts.primaryBold,

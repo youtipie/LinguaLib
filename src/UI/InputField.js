@@ -2,18 +2,19 @@ import {TextInput, StyleSheet, View} from "react-native";
 import {colors, fonts} from "../constants/styles";
 import {moderateScale} from "../utils/metrics";
 
-const InputField = ({defaultValue, onChangeText}) => {
+const InputField = ({placeholder, defaultValue, onChangeText, inputStyles, wrapperStyles, autoFocus = false}) => {
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, wrapperStyles]}>
             <TextInput
-                style={styles.input}
-                placeholder="Enter title"
+                style={[styles.input, inputStyles]}
+                placeholder={placeholder}
                 defaultValue={defaultValue}
                 onChangeText={onChangeText}
                 underlineColorAndroid="transparent"
                 cursorColor={colors.primary300}
                 placeholderTextColor={colors.primary300}
-                autoFocus
+                autoFocus={autoFocus}
+                multiline={true}
             />
         </View>
     );
@@ -23,7 +24,6 @@ export default InputField;
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         justifyContent: "center",
     },
     input: {

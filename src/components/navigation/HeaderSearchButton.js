@@ -23,8 +23,10 @@ const HeaderSearchButton = ({navigation, defaultValue, onTextChange}) => {
             navigation.setOptions({
                 headerTitle: () =>
                     <InputField
+                        placeholder="Enter title"
                         defaultValue={defaultValue}
                         onChangeText={onTextChange}
+                        autoFocus={true}
                     />,
             });
         } else {

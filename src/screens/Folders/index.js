@@ -4,11 +4,8 @@ import {horizontalScale, moderateScale, verticalScale} from "../../utils/metrics
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import FolderCard from "./components/FolderCard";
 import FolderMenu from "./components/FolderMenu";
+import {mockFolderData} from "../../constants/other";
 
-const mockFolderData = [
-    {id: 1, title: "Default folder", path: "/Downloads", isDefault: true},
-    {id: 2, title: "My books", path: "/Books", isDefault: false},
-]
 
 const Folders = () => {
     function mockFolderPick() {

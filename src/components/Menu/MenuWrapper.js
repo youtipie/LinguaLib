@@ -1,23 +1,24 @@
 import {Menu, MenuOptions, MenuTrigger} from "react-native-popup-menu";
-import {StyleSheet} from "react-native";
+import {ScrollView, StyleSheet} from "react-native";
 import {moderateScale} from "../../utils/metrics";
-import MenuItem from "./MenuItem";
 
-const MenuWrapper = ({trigger, options, optionsContainerStyle}) => {
+const MenuWrapper = ({trigger, options, toggleIsOpen = null, menuItem, optionsContainerStyle, renderer}) => {
+    if (!toggleIsOpen) {
+        toggleIsOpen = () => {
+        };
+    }
+
     return (
-        <Menu>
+        <Menu renderer={renderer} onClose={toggleIsOpen} onOpen={toggleIsOpen}>
             <MenuTrigger>
                 {trigger}
             </MenuTrigger>
             <MenuOptions optionsContainerStyle={[styles.menuOptions, optionsContainerStyle]}>
-                {options.map((option, index) => (
-                    <MenuItem
-                        key={index}
-                        icon={option.icon}
-                        label={option.label}
-                        onSelect={option.action}
-                    />
-                ))}
+                <ScrollView>
+                    {options.map((option, index) => (
+                        menuItem(option, index)
+                    ))}
+                </ScrollView>
             </MenuOptions>
         </Menu>
     );
