@@ -22,7 +22,7 @@ const UseHeaderSearch = ({navigation, books, setBooks}) => {
                     navigation={navigation}
                 />,
         });
-    }, [navigation]);
+    }, [navigation, inputValue, setInputValue]);
 };
 
 export default UseHeaderSearch;
