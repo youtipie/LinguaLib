@@ -130,7 +130,6 @@ const Details = ({route, navigation}) => {
                                         <AnimatedTextExpand
                                             startText={book.annotation.slice(0, 100)}
                                             endText={book.annotation.slice(100, book.annotation.length)}
-                                            replaceOriginalText={true}
                                             textStyle={commonStyles.detailText}
                                         />
                                     </DetailsItem>

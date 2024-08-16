@@ -1,7 +1,7 @@
 import {useState} from "react";
-import {Pressable, Animated, Text, View} from "react-native";
+import {Pressable, Animated, Text} from "react-native";
 
-const AnimatedTextExpand = ({startText, endText, containerStyle, textStyle, replaceOriginalText = false}) => {
+const AnimatedTextExpand = ({startText, endText, containerStyle, textStyle}) => {
     const [showFullText, setShowFullText] = useState(false);
     const [animation] = useState(new Animated.Value(1));
 
@@ -19,7 +19,7 @@ const AnimatedTextExpand = ({startText, endText, containerStyle, textStyle, repl
             }).start();
         });
     };
-    // TODO: Different animation depending on replaceOriginalText
+
     // Wanted to animate only endText but have to animate whole text
     // because nested Text doesn't support changing opacity
     return (
