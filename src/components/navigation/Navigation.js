@@ -8,6 +8,12 @@ import Details from "../../screens/Details";
 
 const Stack = createStackNavigator();
 
+const stackScreens = [
+    {name: 'Drawer', options: {headerShown: false}, component: DrawerNavigation},
+    {name: 'SelectSettings', options: {}, component: SelectSettings},
+    {name: 'Details', options: {title: 'Details'}, component: Details},
+]
+
 // TODO: Maybe replace all this styling bs with custom header component
 const Navigation = () => {
     return (
@@ -21,19 +27,14 @@ const Navigation = () => {
                     />,
                 })}
             >
-                <Stack.Screen
-                    name="Drawer"
-                    component={DrawerNavigation}
-                    options={{headerShown: false}}
-                />
-                <Stack.Screen
-                    name="SelectSettings"
-                    component={SelectSettings}
-                />
-                <Stack.Screen
-                    name="Details"
-                    component={Details}
-                />
+                {stackScreens.map((screen, index) => (
+                    <Stack.Screen
+                        key={index}
+                        name={screen.name}
+                        component={screen.component}
+                        options={screen.options}
+                    />
+                ))}
             </Stack.Navigator>
         </NavigationContainer>
     );

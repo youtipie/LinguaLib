@@ -22,6 +22,12 @@ const options = countryFlagEmoji.list.reduce((results, country) => {
 
 const LanguageSelectMenu = ({defaultValue, onSelect}) => {
     const [isOpen, setIsOpen] = useState(false);
+    const [selectedValue, setSelectedValue] = useState(defaultValue || "Select language");
+
+    function handleSelectOption(option) {
+        setSelectedValue(option.language)
+        onSelect(option.language);
+    }
 
     return (
         <MenuWrapper
@@ -30,7 +36,8 @@ const LanguageSelectMenu = ({defaultValue, onSelect}) => {
             trigger={
                 <DetailsItem title="Original language">
                     <View style={{flexDirection: "row", alignItems: "center"}}>
-                        <Text style={[commonStyles.detailText, {marginRight: horizontalScale(5)}]}>{defaultValue}</Text>
+                        <Text
+                            style={[commonStyles.detailText, {marginRight: horizontalScale(5)}]}>{selectedValue}</Text>
                         <FontAwesomeIcon
                             icon={isOpen ? commonIcons.optionsUp : commonIcons.optionsDown}
                             size={moderateScale(16)}
@@ -44,9 +51,9 @@ const LanguageSelectMenu = ({defaultValue, onSelect}) => {
                 <MenuItem
                     key={index}
                     label={option.language}
-                    onSelect={() => onSelect(option.language)}
+                    onSelect={() => handleSelectOption(option)}
                     customIcon={<Text>{option.icon}</Text>}
-                    disabled={option.lang === defaultValue}
+                    disabled={option.lang === selectedValue}
                 />
             )}
             optionsContainerStyle={{backgroundColor: colors.primary100, height: verticalScale(600)}}

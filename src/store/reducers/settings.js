@@ -32,33 +32,6 @@ const settingsSlice = createSlice({
             const {name, value} = action.payload;
             state[name] = value;
         },
-        setOpenBookOnStartUp: (state, action) => {
-            state.openBookOnStartUp = action.payload;
-        },
-        setFullScreenMode: (state, action) => {
-            state.fullScreenMode = action.payload;
-        },
-        setScreenShutdownDelay: (state, action) => {
-            state.screenShutdownDelay = action.payload;
-        },
-        setAnimations: (state, action) => {
-            state.animations = action.payload;
-        },
-        setVolumeButtons: (state, action) => {
-            state.volumeButtons = action.payload;
-        },
-        setTranslatingEngine: (state, action) => {
-            state.translatingEngine = action.payload;
-        },
-        setTargetLanguage: (state, action) => {
-            state.targetLanguage = action.payload;
-        },
-        setBackup: (state, action) => {
-            state.backup = action.payload;
-        },
-        setLanguage: (state, action) => {
-            state.language = action.payload;
-        }
     }
 });
 

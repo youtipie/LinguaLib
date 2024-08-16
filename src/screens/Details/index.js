@@ -131,6 +131,7 @@ const Details = ({route, navigation}) => {
                                             startText={book.annotation.slice(0, 100)}
                                             endText={book.annotation.slice(100, book.annotation.length)}
                                             textStyle={commonStyles.detailText}
+                                            addEllipsis={true}
                                         />
                                     </DetailsItem>
                             )

@@ -24,7 +24,7 @@ const Settings = ({navigation}) => {
     }, [buyMeACoffeeUrl]);
 
     function handleOnChange(fieldName) {
-        return (value) => dispatch(updateSetting({value, fieldName}));
+        return (value) => dispatch(updateSetting({value, name: fieldName}));
     }
 
     return (

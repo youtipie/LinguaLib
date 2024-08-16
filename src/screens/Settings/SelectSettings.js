@@ -2,7 +2,7 @@ import {StyleSheet, Text, View} from "react-native";
 import {colors, fonts} from "../../constants/styles";
 import {moderateScale, verticalScale} from "../../utils/metrics";
 import {useLayoutEffect} from "react";
-import RadioButtonGroup from "../../components/RadioButtonGroup";
+import RadioButtonGroup from "../../UI/RadioButtonGroup";
 import {useDispatch} from "react-redux";
 import {updateSetting} from "../../store/reducers/settings";
 

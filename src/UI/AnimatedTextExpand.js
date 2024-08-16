@@ -1,7 +1,7 @@
 import {useState} from "react";
 import {Pressable, Animated, Text} from "react-native";
 
-const AnimatedTextExpand = ({startText, endText, containerStyle, textStyle}) => {
+const AnimatedTextExpand = ({startText, endText, containerStyle, textStyle, addEllipsis = false}) => {
     const [showFullText, setShowFullText] = useState(false);
     const [animation] = useState(new Animated.Value(1));
 
@@ -27,7 +27,7 @@ const AnimatedTextExpand = ({startText, endText, containerStyle, textStyle}) => 
             <Animated.View style={{opacity: animation}}>
                 {
                     <Text style={textStyle}>
-                        {startText}{replaceOriginalText && !showFullText && "..."}
+                        {startText}{addEllipsis && !showFullText && "..."}
                         {showFullText &&
                             <Text
                                 style={textStyle}>{endText}</Text>

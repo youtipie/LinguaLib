@@ -1,6 +1,6 @@
 import {useState} from "react";
 import {StyleSheet} from "react-native";
-import RadioButton from "../UI/RadioButton";
+import RadioButton from "./RadioButton";
 import {horizontalScale} from "../utils/metrics";
 
 const RadioButtonGroup = ({labels, defaultValue, onValueChange}) => {

@@ -8,14 +8,13 @@ import InputField from "../../UI/InputField";
 const HeaderSearchButton = ({navigation, defaultValue, onTextChange}) => {
     const [isInputOpened, setIsInputOpened] = useState(false);
 
-    // TODO: If I want to use it, I have to fix bug, where reopening search always display empty input
-    // useEffect(() => {
-    //     const closeListener = Keyboard.addListener(
-    //         "keyboardDidHide", () => setIsInputOpened(false)
-    //     )
-    //
-    //     return () => closeListener.remove();
-    // }, []);
+    useEffect(() => {
+        const closeListener = Keyboard.addListener(
+            "keyboardDidHide", () => setIsInputOpened(false)
+        )
+
+        return () => closeListener.remove();
+    }, []);
 
     useEffect(() => {
         if (isInputOpened) {
