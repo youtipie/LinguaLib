@@ -1,37 +1,38 @@
-import {ScrollView, View, StyleSheet, Image, Text, Pressable} from "react-native";
+import {ScrollView, View, StyleSheet, Image, Text} from "react-native";
 import {mockBooks, mockFolderData} from "../../constants/other";
-import {colors, commonIcons, commonStyles, folderIcons, fonts} from "../../constants/styles";
+import {colors, commonStyles, folderIcons, fonts} from "../../constants/styles";
 import {horizontalScale, moderateScale, verticalScale} from "../../utils/metrics";
 import DetailsItem from "./components/DetailsItem";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import AnimatedTextExpand from "../../UI/AnimatedTextExpand";
-import {useLayoutEffect, useState} from "react";
-import HeaderDetailsMenuButton from "../../components/navigation/HeaderDetailsMenuButton";
-import HeaderDetailsEditMenu from "./components/HeaderDetailsEditMenu";
+import {useState} from "react";
 import minutesToTimeString from "../../utils/minutesToTimeString";
 import InputField from "../../UI/InputField";
 import FolderSelect from "./components/FolderSelect";
 import LanguageSelectMenu from "./components/LanguageSelectMenu";
+import UseEditBook from "../../hooks/useEditBook";
 
+const mockBookDetails = {
+    annotation: "Geralt is a Witcher, a man whose magic powers, enhanced by long training and a mysterious elixir, " +
+        "have made him a brilliant fighter and a merciless hunter. Yet he is no ordinary killer. His sole purpose: " +
+        "to destroy the monsters that plague the world.",
+    folder: mockFolderData[0],
+    language: "English",
+    timeSpent: 70,
+    page: 127,
+    totalPages: 924,
+    filename: "the-witcher.epub",
+}
 
-const Details = ({route, navigation}) => {
+const Details = ({route}) => {
     const {bookId} = route.params;
 
     // Just mock data. Will remove later. Don't want to bother adding this to all books.
     const [book, setBook] = useState({
         ...mockBooks.find(book => book.id === bookId),
-        annotation: "Geralt is a Witcher, a man whose magic powers, enhanced by long training and a mysterious elixir, " +
-            "have made him a brilliant fighter and a merciless hunter. Yet he is no ordinary killer. His sole purpose: " +
-            "to destroy the monsters that plague the world.",
-        folder: mockFolderData[0],
-        language: "English",
-        timeSpent: 70,
-        page: 127,
-        totalPages: 924,
-        filename: "the-witcher.epub",
+        ...mockBookDetails
     });
 
-    const [isEditing, setEditing] = useState(false);
     const [form, setForm] = useState({
         title: book.title,
         author: book.author,
@@ -45,42 +46,14 @@ const Details = ({route, navigation}) => {
         );
     }
 
-    function submitForm() {
+    function onSubmit() {
         setBook(prevState => ({
             ...prevState,
             ...form,
         }));
-        setEditing(false);
     }
 
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            headerTitle: ({children, tintColor, style}) => (
-                <View style={{flexDirection: 'row', marginRight: -16}}>
-                    <Text style={[{color: tintColor}, style]}>{children}</Text>
-                    {
-                        !isEditing &&
-                        <Pressable style={{marginLeft: "auto"}}>
-                            <Text style={[{color: colors.success100}, style]}>Read</Text>
-                        </Pressable>
-                    }
-                </View>
-            ),
-            headerRight: () => (
-                isEditing ?
-                    <HeaderDetailsEditMenu
-                        onCancel={() => setEditing(false)}
-                        onConfirm={submitForm}
-                    />
-                    :
-                    <HeaderDetailsMenuButton
-                        bookId={bookId}
-                        enterEditMode={() => setEditing(true)}
-                    />
-            )
-
-        });
-    }, [navigation, isEditing, form])
+    const isEditing = UseEditBook({bookId, form, onSubmit});
 
     return (
         <ScrollView contentContainerStyle={styles.root}>
