@@ -5,6 +5,7 @@ import {drawerIcons, headerStyle} from "../../constants/styles";
 import {createStackNavigator} from "@react-navigation/stack";
 import HeaderButton from "./HeaderButton";
 import Details from "../../screens/Details";
+import ReadBook from "../../screens/ReadBook";
 
 const Stack = createStackNavigator();
 
@@ -12,6 +13,7 @@ const stackScreens = [
     {name: 'Drawer', options: {headerShown: false}, component: DrawerNavigation},
     {name: 'SelectSettings', options: {}, component: SelectSettings},
     {name: 'Details', options: {title: 'Details'}, component: Details},
+    {name: 'ReadBook', options: {headerShown: false}, component: ReadBook},
 ]
 
 // TODO: Maybe replace all this styling bs with custom header component

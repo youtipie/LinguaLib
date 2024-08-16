@@ -1,13 +1,13 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {Reader, useReader} from "@epubjs-react-native/core";
 import * as DocumentPicker from "expo-document-picker";
 import {StorageAccessFramework} from "expo-file-system";
 import {Pressable, SafeAreaView, Text, View} from "react-native";
 import {useFileSystem} from "@epubjs-react-native/expo-file-system";
-import {translateGoogle} from "../services/translate.service";
-import escapeString from "../utils/escapeString";
+import {translateGoogle} from "../../services/translate.service";
+import escapeString from "../../utils/escapeString";
 
-const Main = () => {
+const ReadBook = () => {
     const [src, setSrc] = useState('');
     const {injectJavascript} = useReader();
 
@@ -107,7 +107,7 @@ const Main = () => {
         }
     }
 
-    async function handleSrc() {
+    async function getSrc() {
         try {
             const book = await DocumentPicker.getDocumentAsync({
                 copyToCacheDirectory: false,
@@ -139,28 +139,20 @@ const Main = () => {
         }
     }
 
+    !src && getSrc();
+
     return (
         <SafeAreaView style={{flex: 1}}>
-            {
-                src ?
-                    <>
-                        <Reader
-                            src={src}
-                            fileSystem={useFileSystem}
-                            onWebViewMessage={(message) => handleMessage(message)}
-                            injectedJavascript={js}
-                        />
-                        {/*<Pressable onPress={translate}><Text>Click</Text></Pressable>*/}
-                    </>
-                    :
-                    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                        <Pressable onPress={handleSrc}>
-                            <Text>Click</Text>
-                        </Pressable>
-                    </View>
+            {src &&
+                <Reader
+                    src={src}
+                    fileSystem={useFileSystem}
+                    onWebViewMessage={(message) => handleMessage(message)}
+                    injectedJavascript={js}
+                />
             }
         </SafeAreaView>
     );
 };
 
-export default Main;
+export default ReadBook;

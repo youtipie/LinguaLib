@@ -9,6 +9,10 @@ const UseEditBook = ({bookId, form, onSubmit}) => {
     const navigation = useNavigation();
     const [isEditing, setEditing] = useState(false);
 
+    function handleReadPress() {
+        navigation.navigate("ReadBook", {bookId});
+    }
+
     function handleSubmitForm() {
         onSubmit()
         setEditing(false);
@@ -21,7 +25,7 @@ const UseEditBook = ({bookId, form, onSubmit}) => {
                     <Text style={[{color: tintColor}, style]}>{children}</Text>
                     {
                         !isEditing &&
-                        <Pressable style={{marginLeft: "auto"}}>
+                        <Pressable style={{marginLeft: "auto"}} onPress={handleReadPress}>
                             <Text style={[{color: colors.success100}, style]}>Read</Text>
                         </Pressable>
                     }

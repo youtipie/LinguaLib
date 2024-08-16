@@ -7,7 +7,7 @@ const BookCard = ({id, title, author, progress, coverUri}) => {
     const navigation = useNavigation();
 
     function handleImgPress() {
-        //     TODO: Go to reading book
+        navigation.navigate("ReadBook", {bookId: id});
     }
 
     function handleCardPress() {
