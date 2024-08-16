@@ -6,8 +6,13 @@ import {buyMeACoffeeUrl} from "../../constants/other";
 import Section from "./compontens/Section";
 import SectionItemWithSwitch from "./compontens/SectionItemWithSwitch";
 import SectionItem from "./compontens/SectionItem";
+import {useDispatch, useSelector} from "react-redux";
+import {selectAllSettings, settingsFields, updateSetting} from "../../store/reducers/settings";
 
 const Settings = ({navigation}) => {
+    const settings = useSelector(selectAllSettings);
+    const dispatch = useDispatch();
+
     const visitSupportPage = useCallback(async () => {
         const supported = await Linking.canOpenURL(buyMeACoffeeUrl);
 
@@ -18,45 +23,45 @@ const Settings = ({navigation}) => {
         }
     }, [buyMeACoffeeUrl]);
 
-    function mockChange(value) {
-        console.log(value)
+    function handleOnChange(fieldName) {
+        return (value) => dispatch(updateSetting({value, fieldName}));
     }
 
     return (
         <ScrollView contentContainerStyle={styles.root}>
             <Section title="General">
                 <SectionItemWithSwitch
-                    defaultValue={false}
+                    defaultValue={settings.openBookOnStartUp}
                     text="Open book on start up"
                     subtext="Continue reading the book when the app starts"
-                    onChange={mockChange}
+                    onChange={handleOnChange(settingsFields.openBookOnStartUp)}
                 />
             </Section>
 
             <Section title="Reading">
                 <SectionItemWithSwitch
-                    defaultValue={false}
+                    defaultValue={settings.fullScreenMode}
                     text="Full screen mode"
                     subtext="Hide navigation panel and status bar"
-                    onChange={mockChange}
+                    onChange={handleOnChange(settingsFields.fullScreenMode)}
                 />
                 <SectionItemWithSwitch
-                    defaultValue={false}
+                    defaultValue={settings.screenShutdownDelay}
                     text="Screen shutdown delay"
                     subtext="Leave the screen on for a longer period than the average use of a phone"
-                    onChange={mockChange}
+                    onChange={handleOnChange(settingsFields.screenShutdownDelay)}
                 />
                 <SectionItemWithSwitch
-                    defaultValue={false}
+                    defaultValue={settings.animations}
                     text="Animations"
                     subtext="Show the animations when changing pages"
-                    onChange={mockChange}
+                    onChange={handleOnChange(settingsFields.animations)}
                 />
                 <SectionItemWithSwitch
-                    defaultValue={false}
+                    defaultValue={settings.volumeButtons}
                     text="Volume buttons"
                     subtext="Use the volume buttons to turn pages. Volume down - previous page, volume up - next page"
-                    onChange={mockChange}
+                    onChange={handleOnChange(settingsFields.volumeButtons)}
                 />
             </Section>
 
@@ -65,27 +70,29 @@ const Settings = ({navigation}) => {
                     onPress={() => navigation.navigate("SelectSettings", {
                         title: "Translating engine",
                         description: "Select the translation engine to use for translating text in your books. More engines may be added in the future.",
-                        labels: ["Google translate", "LinguaLib server"],
-                        defaultValue: "Google translate",
+                        labels: ["Google Translate", "LinguaLib server"],
+                        defaultValue: settings.translatingEngine,
+                        fieldName: settingsFields.translatingEngine
                     })}
                     text="Translating engine"
-                    subtext="Chosen: Google Translate"
+                    subtext={`Chosen: ${settings.translatingEngine}`}
                 />
                 <SectionItem
                     onPress={() => navigation.navigate("SelectSettings", {
                         title: "Target language",
                         description: "Select the language into which your books will be translated. Please note that this list may differ from one translation engine to another.",
                         labels: ["Ukrainian", "English"],
-                        defaultValue: "Ukrainian",
+                        defaultValue: settings.targetLanguage,
+                        fieldName: settingsFields.targetLanguage
                     })}
                     text="Target language"
-                    subtext="Chosen: Ukrainian"
+                    subtext={`Chosen: ${settings.targetLanguage}`}
                 />
                 <SectionItemWithSwitch
-                    defaultValue={false}
+                    defaultValue={settings.backup}
                     text="Backup"
                     subtext="By default, the original text in your books is replaced by the translated text. Turn this option on to make a backup copy of the original book."
-                    onChange={mockChange}
+                    onChange={handleOnChange(settingsFields.backup)}
                 />
             </Section>
 
@@ -95,10 +102,11 @@ const Settings = ({navigation}) => {
                         title: "Language",
                         description: "Select the interface language. Please note that this option is not relevant for the translation language. To change the translation language, go to Settings, Translation section",
                         labels: ["English", "Ukrainian"],
-                        defaultValue: "English",
+                        defaultValue: settings.language,
+                        fieldName: settingsFields.language
                     })}
                     text="Target language"
-                    subtext="Chosen: Ukrainian"
+                    subtext={`Chosen: ${settings.language}`}
                 />
                 <SectionItem
                     onPress={visitSupportPage}

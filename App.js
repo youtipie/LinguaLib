@@ -5,6 +5,9 @@ import {useFonts} from "expo-font";
 import {useEffect} from "react";
 import Navigation from "./src/components/navigation/Navigation";
 import {MenuProvider} from "react-native-popup-menu";
+import {Provider} from "react-redux";
+import {store, persistor} from "./src/store/store";
+import {PersistGate} from "redux-persist/integration/react";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -27,9 +30,13 @@ export default function App() {
     return (
         <>
             <StatusBar style="light"/>
-            <MenuProvider>
-                <Navigation/>
-            </MenuProvider>
+            <Provider store={store}>
+                <PersistGate loading={null} persistor={persistor}>
+                    <MenuProvider>
+                        <Navigation/>
+                    </MenuProvider>
+                </PersistGate>
+            </Provider>
         </>
     )
 }

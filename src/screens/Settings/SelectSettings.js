@@ -3,9 +3,12 @@ import {colors, fonts} from "../../constants/styles";
 import {moderateScale, verticalScale} from "../../utils/metrics";
 import {useLayoutEffect} from "react";
 import RadioButtonGroup from "../../components/RadioButtonGroup";
+import {useDispatch} from "react-redux";
+import {updateSetting} from "../../store/reducers/settings";
 
 const SelectSettings = ({navigation, route}) => {
-    const {title, description, labels, defaultValue} = route.params;
+    const {title, description, labels, defaultValue, fieldName} = route.params;
+    const dispatch = useDispatch();
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -13,9 +16,8 @@ const SelectSettings = ({navigation, route}) => {
         });
     }, [navigation]);
 
-    // TODO: Think of a way to change value in a store
-    function mockValueChanged(value) {
-        console.log(value)
+    function onValueChanged(value) {
+        dispatch(updateSetting({value, name: fieldName}))
     }
 
     return (
@@ -24,7 +26,7 @@ const SelectSettings = ({navigation, route}) => {
             <RadioButtonGroup
                 labels={labels}
                 defaultValue={defaultValue}
-                onValueChange={mockValueChanged}
+                onValueChange={onValueChanged}
             />
         </View>
     );
