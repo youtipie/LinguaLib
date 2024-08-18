@@ -8,14 +8,14 @@ import CardWithIcons from "../../../UI/CardWithIcons";
 import InputField from "../../../UI/InputField";
 import useModal from "../../../hooks/useModal";
 
-const FolderCard = ({item, onEdit, onDelete}) => {
-    const [title, setTitle] = useState(item.title);
-    const [isEditing, setEditing] = useState(item.title.length === 0);
+const FolderCard = ({folder, onEdit, onDelete}) => {
+    const [title, setTitle] = useState(folder.title);
+    const [isEditing, setEditing] = useState(folder.title.length === 0);
     const {showModal} = useModal(
         "Note",
         "Folder name cannot be empty!",
         "Delete folder",
-        () => onDelete(item.id),
+        onDelete,
         "Continue",
     );
 
@@ -29,7 +29,7 @@ const FolderCard = ({item, onEdit, onDelete}) => {
 
     function handleSubmit() {
         if (title.length) {
-            onEdit(item.id, title);
+            onEdit(title);
             toggleEdit();
             return;
         }
@@ -41,7 +41,7 @@ const FolderCard = ({item, onEdit, onDelete}) => {
         <CardWithIcons
             leftIcon={
                 <FontAwesomeIcon
-                    icon={item.isDefault ? folderIcons.rootFolder : folderIcons.folder}
+                    icon={folder.isDefault ? folderIcons.rootFolder : folderIcons.folder}
                     size={moderateScale(36)}
                     color={colors.textPrimary200}
                 />
@@ -61,7 +61,7 @@ const FolderCard = ({item, onEdit, onDelete}) => {
                             :
                             <Text style={styles.cardTitle} numberOfLines={1} ellipsizeMode={"middle"}>{title}</Text>
                     }
-                    <Text style={styles.cardSubtitle} numberOfLines={1} ellipsizeMode={"middle"}>{item.path}</Text>
+                    <Text style={styles.cardSubtitle} numberOfLines={1} ellipsizeMode={"middle"}>{folder.path}</Text>
                 </View>
             }
             rightIcon={
@@ -74,7 +74,7 @@ const FolderCard = ({item, onEdit, onDelete}) => {
                         />
                     </Pressable>
                     :
-                    <FolderMenu folderId={item.id} onEdit={toggleEdit} onDelete={onDelete}/>
+                    <FolderMenu onEdit={toggleEdit} onDelete={onDelete}/>
             }
         />
     );

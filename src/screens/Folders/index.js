@@ -3,17 +3,29 @@ import {colors, commonIcons, fonts} from "../../constants/styles";
 import {horizontalScale, moderateScale, verticalScale} from "../../utils/metrics";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import CardWithIcons from "../../UI/CardWithIcons";
-import {mockFolderData} from "../../constants/other";
-import {documentDirectory, getContentUriAsync, StorageAccessFramework} from "expo-file-system";
-import getFolderName from "../../utils/getFolderName";
-import {useState} from "react";
-import {nanoid} from "@reduxjs/toolkit";
+import {StorageAccessFramework} from "expo-file-system";
+import {useEffect, useState} from "react";
 import FolderCard from "./components/FolderCard";
+import database from "../../database";
+import {addFolder} from "../../database/queries";
+
+const folderCollection = database.get('folders');
 
 // TODO: Remove root folder definition or thinks something to replace it.
 //  FS cannot get access to /downloads or root folder
 const Folders = () => {
-    const [folders, setFolders] = useState(mockFolderData);
+    const [folders, setFolders] = useState([]);
+
+    useEffect(() => {
+        const subscription = folderCollection
+            .query()
+            .observe()
+            .subscribe(folders => {
+                setFolders(folders);
+            });
+
+        return () => subscription.unsubscribe();
+    }, []);
 
     async function handleAddFolder() {
         const permissions = await StorageAccessFramework.requestDirectoryPermissionsAsync();
@@ -24,35 +36,38 @@ const Folders = () => {
 
         try {
             const uri = permissions.directoryUri;
-            const folderName = getFolderName(uri);
-            setFolders(prevState => [...prevState, {
-                id: nanoid(),
-                title: "",
-                path: folderName,
-                uri,
-                isDefault: false
-            }]);
+            /*
+            Idea:
+            User clicks "Add folder"
+            -> New folder created with empty name (Not added to db)
+            -> User enters title for a folder
+            -> folder being added to db
+             */
+            // TODO: Make idea real or leave as it is
+            await addFolder("New Folder", uri);
+            console.log((await StorageAccessFramework.readDirectoryAsync(uri)).filter(element => element.endsWith(".epub")));
         } catch (err) {
             console.log(err);
         }
     }
 
-    // Order of folders is messed. When using db, it will be fixed
-    function handleEditFolder(folderId, newTitle) {
-        setFolders(prevState => {
-            const editedFolder = {...prevState.find(folder => folder.id === folderId), title: newTitle};
-            return [...prevState.filter(folder => folder.id !== folderId), editedFolder];
-        });
+    async function handleEditFolder(folder, newTitle) {
+        await folder.changeTitle(newTitle);
     }
 
-    function handleDeleteFolder(folderId) {
-        setFolders(prevState => prevState.filter(folder => folder.id !== folderId));
+    async function handleDeleteFolder(folder) {
+        await folder.delete()
     }
 
     return (
         <ScrollView contentContainerStyle={styles.root}>
-            {folders.map((item) => (
-                <FolderCard key={item.id} item={item} onEdit={handleEditFolder} onDelete={handleDeleteFolder}/>
+            {folders.map((folder) => (
+                <FolderCard
+                    key={folder.id}
+                    folder={folder}
+                    onEdit={(newTitle) => handleEditFolder(folder, newTitle)}
+                    onDelete={() => handleDeleteFolder(folder)}
+                />
             ))}
 
             <CardWithIcons
