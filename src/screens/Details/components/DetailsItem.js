@@ -17,6 +17,7 @@ const DetailsItem = ({title, content, children, isEditing, defaultValue, onChang
                 placeholder="Enter text"
                 defaultValue={defaultValue}
                 onChangeText={onChangeText}
+                multiline={true}
             />
         )
     }

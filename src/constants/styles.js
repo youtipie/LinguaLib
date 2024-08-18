@@ -3,7 +3,7 @@ import {
     faBars,
     faBookOpen,
     faBookOpenReader, faCaretDown, faCaretUp,
-    faCheck, faCheckCircle, faCirclePlus, faCircleXmark, faEllipsis, faEllipsisVertical,
+    faCheck, faCheckCircle, faCircleExclamation, faCirclePlus, faCircleXmark, faEllipsis, faEllipsisVertical,
     faExclamation,
     faFolder,
     faGear, faPen, faRecycle, faSdCard, faSearch, faShareNodes, faTrashCan
@@ -25,7 +25,8 @@ export const colors = {
     statusBar: "#F3F3F3",
     accent100: "#BA5BDB",
     accent200: "#543765",
-    menu100: "#333333"
+    menu100: "#333333",
+    fail100: "#B0504C",
 }
 
 export const fonts = {
@@ -79,6 +80,7 @@ export const commonIcons = {
     crossCircle: faCircleXmark,
     optionsDown: faCaretDown,
     optionsUp: faCaretUp,
+    info: faCircleExclamation
 }
 
 export const commonStyles = {

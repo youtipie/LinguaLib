@@ -68,6 +68,7 @@ const Details = ({route}) => {
                                     placeholder="Enter title"
                                     defaultValue={book.title}
                                     onChangeText={(value) => updateForm("title", value)}
+                                    multiline={true}
                                 />
                                 :
                                 <Text style={styles.title}>{book.title}</Text>

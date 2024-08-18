@@ -1,42 +1,61 @@
 import {View, Text, StyleSheet, ScrollView} from "react-native";
-import {colors, commonIcons, folderIcons, fonts} from "../../constants/styles";
+import {colors, commonIcons, fonts} from "../../constants/styles";
 import {horizontalScale, moderateScale, verticalScale} from "../../utils/metrics";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
-import FolderCard from "./components/FolderCard";
-import FolderMenu from "./components/FolderMenu";
+import CardWithIcons from "../../UI/CardWithIcons";
 import {mockFolderData} from "../../constants/other";
+import {documentDirectory, getContentUriAsync, StorageAccessFramework} from "expo-file-system";
+import getFolderName from "../../utils/getFolderName";
+import {useState} from "react";
+import {nanoid} from "@reduxjs/toolkit";
+import FolderCard from "./components/FolderCard";
 
-
+// TODO: Remove root folder definition or thinks something to replace it.
+//  FS cannot get access to /downloads or root folder
 const Folders = () => {
-    function mockFolderPick() {
-        console.log("Add folder");
+    const [folders, setFolders] = useState(mockFolderData);
+
+    async function handleAddFolder() {
+        const permissions = await StorageAccessFramework.requestDirectoryPermissionsAsync();
+
+        if (!permissions.granted) {
+            return;
+        }
+
+        try {
+            const uri = permissions.directoryUri;
+            const folderName = getFolderName(uri);
+            setFolders(prevState => [...prevState, {
+                id: nanoid(),
+                title: "",
+                path: folderName,
+                uri,
+                isDefault: false
+            }]);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    // Order of folders is messed. When using db, it will be fixed
+    function handleEditFolder(folderId, newTitle) {
+        setFolders(prevState => {
+            const editedFolder = {...prevState.find(folder => folder.id === folderId), title: newTitle};
+            return [...prevState.filter(folder => folder.id !== folderId), editedFolder];
+        });
+    }
+
+    function handleDeleteFolder(folderId) {
+        setFolders(prevState => prevState.filter(folder => folder.id !== folderId));
     }
 
     return (
         <ScrollView contentContainerStyle={styles.root}>
-            {mockFolderData.map((item) => (
-                <FolderCard
-                    key={item.id}
-                    leftIcon={
-                        <FontAwesomeIcon
-                            icon={item.isDefault ? folderIcons.rootFolder : folderIcons.folder}
-                            size={moderateScale(36)}
-                            color={colors.textPrimary200}
-                        />
-                    }
-                    content={
-                        <View style={styles.textWrapper}>
-                            <Text style={styles.cardTitle}>{item.title}</Text>
-                            <Text style={styles.cardSubtitle}>{item.path}</Text>
-                        </View>
-                    }
-                    rightIcon={
-                        <FolderMenu folderId={item.id}/>
-                    }
-                />
+            {folders.map((item) => (
+                <FolderCard key={item.id} item={item} onEdit={handleEditFolder} onDelete={handleDeleteFolder}/>
             ))}
 
-            <FolderCard
+            <CardWithIcons
                 leftIcon={
                     <View style={styles.icon}></View>
                 }
@@ -50,7 +69,7 @@ const Folders = () => {
                         color={colors.success200}
                     />
                 }
-                onPress={mockFolderPick}
+                onPress={handleAddFolder}
             />
         </ScrollView>
     );

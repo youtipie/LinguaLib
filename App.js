@@ -9,6 +9,7 @@ import {Provider} from "react-redux";
 import {store, persistor} from "./src/store/store";
 import {PersistGate} from "redux-persist/integration/react";
 import {ReaderProvider} from "@epubjs-react-native/core";
+import ModalProvider from "./src/components/ModalProvider";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -34,9 +35,11 @@ export default function App() {
             <Provider store={store}>
                 <PersistGate loading={null} persistor={persistor}>
                     <MenuProvider>
-                        <ReaderProvider>
-                            <Navigation/>
-                        </ReaderProvider>
+                        <ModalProvider>
+                            <ReaderProvider>
+                                <Navigation/>
+                            </ReaderProvider>
+                        </ModalProvider>
                     </MenuProvider>
                 </PersistGate>
             </Provider>

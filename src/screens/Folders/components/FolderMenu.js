@@ -4,10 +4,10 @@ import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import MenuWrapper from "../../../components/Menu/MenuWrapper";
 import MenuItem from "../../../components/Menu/MenuItem";
 
-const FolderMenu = ({folderId}) => {
+const FolderMenu = ({folderId, onEdit, onDelete}) => {
     const options = [
-        {icon: commonIcons.editSquare, label: 'Rename', action: () => console.log(`rename${folderId}`)},
-        {icon: commonIcons.minusSquare, label: 'Remove', action: () => console.log(`remove${folderId}`)},
+        {icon: commonIcons.editSquare, label: 'Rename', action: onEdit},
+        {icon: commonIcons.minusSquare, label: 'Remove', action: () => onDelete(folderId)},
     ];
 
     return (
