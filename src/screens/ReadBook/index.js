@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Reader, useReader} from "@epubjs-react-native/core";
 import * as DocumentPicker from "expo-document-picker";
-import {StorageAccessFramework} from "expo-file-system";
+import {cacheDirectory, copyAsync, deleteAsync, readAsStringAsync} from "expo-file-system";
 import {Pressable, SafeAreaView, Text, View} from "react-native";
 import {useFileSystem} from "@epubjs-react-native/expo-file-system";
 import {translateGoogle} from "../../services/translate.service";
@@ -9,7 +9,10 @@ import escapeString from "../../utils/escapeString";
 
 const ReadBook = () => {
     const [src, setSrc] = useState('');
-    const {injectJavascript} = useReader();
+    const {injectJavascript, getMeta} = useReader();
+    useEffect(() => {
+        console.log(getMeta())
+    }, [getMeta]);
 
     const js = `
     let currentElementsInSection = null;
@@ -107,14 +110,30 @@ const ReadBook = () => {
         }
     }
 
+    async function tempCopyToCache(uri, action) {
+        const tempUri = cacheDirectory + 'temp_book';
+        await copyAsync({from: uri, to: tempUri});
+
+        const result = await readAsStringAsync(tempUri, {
+            encoding: "base64",
+        });
+
+        action(result);
+
+        await deleteAsync(tempUri);
+
+    }
+
     async function getSrc() {
         try {
             const book = await DocumentPicker.getDocumentAsync({
+                // Setting to false cause error on dev build. Might consider writing other mechanism to get file uri
                 copyToCacheDirectory: false,
                 type: "application/epub+zip"
             });
             const uri = book.assets[0].uri;
-            setSrc(await StorageAccessFramework.readAsStringAsync(uri, {encoding: 'base64'}));
+
+            await tempCopyToCache(uri, (fileContent) => setSrc(fileContent));
         } catch (e) {
             console.error(e);
         }
