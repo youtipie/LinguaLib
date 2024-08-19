@@ -8,7 +8,7 @@ import {useEffect, useState} from "react";
 import FolderCard from "./components/FolderCard";
 import database from "../../database";
 import {addFolder} from "../../database/queries";
-import useGetMetadataFromUriList from "../../hooks/useGetMetadataFromUriList";
+import UseGetMetadataFromDirectory from "../../hooks/UseGetMetadataFromDirectory";
 
 const folderCollection = database.get('folders');
 
@@ -16,7 +16,7 @@ const folderCollection = database.get('folders');
 //  FS cannot get access to /downloads or root folder
 const Folders = () => {
     const [folders, setFolders] = useState([]);
-    const {extractMetadataFromUriList} = useGetMetadataFromUriList();
+    const {getMetadataFromDirectory} = UseGetMetadataFromDirectory();
 
     useEffect(() => {
         const subscription = folderCollection
@@ -47,8 +47,7 @@ const Folders = () => {
              */
             // TODO: Make idea real or leave as it is
             await addFolder("New Folder", uri);
-            const uriList = (await StorageAccessFramework.readDirectoryAsync(uri)).filter(element => element.endsWith(".epub"))
-            const files = await extractMetadataFromUriList(uriList);
+            const files = await getMetadataFromDirectory(uri);
             Alert.alert("Alert", JSON.stringify(files.map(file => file.title)));
         } catch (err) {
             console.log(err);
