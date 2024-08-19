@@ -6,6 +6,7 @@ import Folder from "./models/Folder";
 import Book from "./models/Book";
 import LokiJSAdapter from "@nozbe/watermelondb/adapters/lokijs";
 
+// Replace to SQLiteAdapter on build
 const adapter = new LokiJSAdapter({
     schema,
     migrations,

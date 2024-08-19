@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet, ScrollView} from "react-native";
+import {View, Text, StyleSheet, ScrollView, Alert} from "react-native";
 import {colors, commonIcons, fonts} from "../../constants/styles";
 import {horizontalScale, moderateScale, verticalScale} from "../../utils/metrics";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
@@ -8,6 +8,7 @@ import {useEffect, useState} from "react";
 import FolderCard from "./components/FolderCard";
 import database from "../../database";
 import {addFolder} from "../../database/queries";
+import useGetMetadataFromUriList from "../../hooks/useGetMetadataFromUriList";
 
 const folderCollection = database.get('folders');
 
@@ -15,6 +16,7 @@ const folderCollection = database.get('folders');
 //  FS cannot get access to /downloads or root folder
 const Folders = () => {
     const [folders, setFolders] = useState([]);
+    const {extractMetadataFromUriList} = useGetMetadataFromUriList();
 
     useEffect(() => {
         const subscription = folderCollection
@@ -45,7 +47,9 @@ const Folders = () => {
              */
             // TODO: Make idea real or leave as it is
             await addFolder("New Folder", uri);
-            console.log((await StorageAccessFramework.readDirectoryAsync(uri)).filter(element => element.endsWith(".epub")));
+            const uriList = (await StorageAccessFramework.readDirectoryAsync(uri)).filter(element => element.endsWith(".epub"))
+            const files = await extractMetadataFromUriList(uriList);
+            Alert.alert("Alert", JSON.stringify(files.map(file => file.title)));
         } catch (err) {
             console.log(err);
         }
