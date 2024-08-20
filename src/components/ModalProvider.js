@@ -100,6 +100,7 @@ const styles = StyleSheet.create({
     },
     modal: {
         backgroundColor: colors.primary100,
+        maxWidth: "90%",
         shadowColor: "black",
         shadowOffset: {width: 0, height: 2,},
         shadowOpacity: 0.25,

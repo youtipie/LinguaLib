@@ -11,13 +11,7 @@ import useModal from "../../../hooks/useModal";
 const FolderCard = ({folder, onEdit, onDelete}) => {
     const [title, setTitle] = useState(folder.title);
     const [isEditing, setEditing] = useState(folder.title.length === 0);
-    const {showModal} = useModal(
-        "Note",
-        "Folder name cannot be empty!",
-        "Delete folder",
-        onDelete,
-        "Continue",
-    );
+    const {showModal} = useModal();
 
     function toggleEdit() {
         setEditing(prev => !prev);
@@ -34,7 +28,13 @@ const FolderCard = ({folder, onEdit, onDelete}) => {
             return;
         }
 
-        showModal();
+        showModal(
+            "Note",
+            "Folder name cannot be empty!",
+            "Delete folder",
+            onDelete,
+            "Continue",
+        );
     }
 
     return (

@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import {Reader, useReader} from "@epubjs-react-native/core";
 import * as DocumentPicker from "expo-document-picker";
-import {cacheDirectory, copyAsync, deleteAsync, readAsStringAsync} from "expo-file-system";
-import {Pressable, SafeAreaView, Text, View} from "react-native";
+import {SafeAreaView} from "react-native";
 import {useFileSystem} from "@epubjs-react-native/expo-file-system";
 import {translateGoogle} from "../../services/translate.service";
 import escapeString from "../../utils/escapeString";
+import tempCopyToCache from "../../utils/tempCopyToCache";
 
 const ReadBook = () => {
     const [src, setSrc] = useState('');
@@ -110,20 +110,6 @@ const ReadBook = () => {
         }
     }
 
-    async function tempCopyToCache(uri, action) {
-        const tempUri = cacheDirectory + 'temp_book';
-        await copyAsync({from: uri, to: tempUri});
-
-        const result = await readAsStringAsync(tempUri, {
-            encoding: "base64",
-        });
-
-        action(result);
-
-        await deleteAsync(tempUri);
-
-    }
-
     async function getSrc() {
         try {
             const book = await DocumentPicker.getDocumentAsync({
@@ -133,7 +119,8 @@ const ReadBook = () => {
             });
             const uri = book.assets[0].uri;
 
-            await tempCopyToCache(uri, (fileContent) => setSrc(fileContent));
+            const fileContent = await tempCopyToCache(uri);
+            setSrc(fileContent)
         } catch (e) {
             console.error(e);
         }

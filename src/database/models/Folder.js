@@ -1,6 +1,6 @@
 import {Model} from '@nozbe/watermelondb'
 import {children, field, text, writer} from "@nozbe/watermelondb/decorators";
-import getFolderName from "../../utils/getFolderName";
+import getAbsolutePath from "../../utils/getAbsolutePath";
 
 export default class Folder extends Model {
     static table = "folders"
@@ -14,7 +14,7 @@ export default class Folder extends Model {
     @children("books") books
 
     get path() {
-        return getFolderName(this.uri)
+        return getAbsolutePath(this.uri)
     }
 
     @writer

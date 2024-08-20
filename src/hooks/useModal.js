@@ -1,10 +1,10 @@
 import {useContext} from "react";
 import {ModalContext} from "../components/ModalProvider";
 
-const UseModal = (title, content, leftButtonText, leftButtonOnPress, rightButtonText, rightButtonOnPress) => {
+const UseModal = () => {
     const {isVisible, showModal, hideModal} = useContext(ModalContext);
 
-    function showModalWrapper() {
+    function showModalWrapper(title, content, leftButtonText, leftButtonOnPress, rightButtonText, rightButtonOnPress) {
         showModal(title, content, leftButtonText, leftButtonOnPress, rightButtonText, rightButtonOnPress);
     }
 

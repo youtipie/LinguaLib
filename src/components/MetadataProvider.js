@@ -3,17 +3,26 @@ import {View} from "react-native";
 import {Reader, useReader} from "@epubjs-react-native/core";
 import {useFileSystem} from "@epubjs-react-native/expo-file-system";
 import tempCopyToCache from "../utils/tempCopyToCache";
+import LoadingSpinner from "../UI/LoadingSpinner";
+import getFilename from "../utils/getFilename";
 
 export const MetadataContext = createContext([]);
 
-// TODO: Optimize this sh. Probably make processing in batches
+// TODO: Optimize this sh. Cannot use batches. Seems like books cannot be rendered in batch.
 const MetadataProvider = ({children}) => {
     const {getMeta} = useReader();
     const [uriList, setUriList] = useState([]);
     const [metadataList, setMetadataList] = useState([]);
     const [currentSrc, setCurrentSrc] = useState(null);
     const [currentUriIndex, setCurrentUriIndex] = useState(null);
+    const [isDone, setIsDone] = useState(true);
     const [onDone, setOnDone] = useState(null);
+
+    function extractMetadataFromUriList(uriList, onDone) {
+        setUriList(uriList);
+        setIsDone(false);
+        setOnDone(() => onDone);
+    }
 
     function onReadyHandler() {
         const metadata = getMeta();
@@ -22,10 +31,18 @@ const MetadataProvider = ({children}) => {
         setCurrentUriIndex(prev => prev + 1);
     }
 
-    function extractMetadataFromUriList(uriList, onDone) {
-        setUriList(uriList);
-        setOnDone(() => onDone);
+    function handleDone(returnValue) {
+        setIsDone(true);
+        setCurrentSrc(null);
+        setCurrentUriIndex(null);
         setMetadataList([]);
+        setUriList([]);
+        onDone(returnValue);
+        setOnDone(null);
+    }
+
+    function discard() {
+        handleDone([]);
     }
 
     useEffect(() => {
@@ -44,8 +61,8 @@ const MetadataProvider = ({children}) => {
     }, [currentUriIndex]);
 
     useEffect(() => {
-        if ((metadataList.length > 0 && uriList.length > 0) && (metadataList.length === uriList.length) && onDone) {
-            onDone(metadataList);
+        if ((metadataList.length > 0 && uriList.length > 0) && (metadataList.length === uriList.length)) {
+            handleDone(metadataList)
         }
     }, [metadataList, uriList]);
 
@@ -64,6 +81,14 @@ const MetadataProvider = ({children}) => {
                         onReady={onReadyHandler}
                     />
                 </View>
+            }
+            {
+                !isDone && uriList &&
+                <LoadingSpinner
+                    progressText={`${currentUriIndex + 1}/${uriList.length}`}
+                    label={`Loading file: ${getFilename(uriList[currentUriIndex])}`}
+                    onDiscard={discard}
+                />
             }
         </MetadataContext.Provider>
     );

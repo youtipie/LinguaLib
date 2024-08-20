@@ -6,6 +6,10 @@ import {createStackNavigator} from "@react-navigation/stack";
 import HeaderButton from "./HeaderButton";
 import Details from "../../screens/Details";
 import ReadBook from "../../screens/ReadBook";
+import ModalProvider from "../ModalProvider";
+import {ReaderProvider} from "@epubjs-react-native/core";
+import MetadataProvider from "../MetadataProvider";
+import {MenuProvider} from "react-native-popup-menu";
 
 const Stack = createStackNavigator();
 
@@ -20,24 +24,32 @@ const stackScreens = [
 const Navigation = () => {
     return (
         <NavigationContainer>
-            <Stack.Navigator
-                screenOptions={({navigation}) => ({
-                    ...headerStyle,
-                    headerLeft: () => <HeaderButton
-                        onPress={() => navigation.goBack()}
-                        icon={drawerIcons.goBack}
-                    />,
-                })}
-            >
-                {stackScreens.map((screen, index) => (
-                    <Stack.Screen
-                        key={index}
-                        name={screen.name}
-                        component={screen.component}
-                        options={screen.options}
-                    />
-                ))}
-            </Stack.Navigator>
+            <MenuProvider>
+                <ModalProvider>
+                    <ReaderProvider>
+                        <MetadataProvider>
+                            <Stack.Navigator
+                                screenOptions={({navigation}) => ({
+                                    ...headerStyle,
+                                    headerLeft: () => <HeaderButton
+                                        onPress={() => navigation.goBack()}
+                                        icon={drawerIcons.goBack}
+                                    />,
+                                })}
+                            >
+                                {stackScreens.map((screen, index) => (
+                                    <Stack.Screen
+                                        key={index}
+                                        name={screen.name}
+                                        component={screen.component}
+                                        options={screen.options}
+                                    />
+                                ))}
+                            </Stack.Navigator>
+                        </MetadataProvider>
+                    </ReaderProvider>
+                </ModalProvider>
+            </MenuProvider>
         </NavigationContainer>
     );
 };
