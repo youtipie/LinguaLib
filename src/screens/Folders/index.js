@@ -48,7 +48,7 @@ const Folders = () => {
             // TODO: Make idea real or leave as it is
             await addFolder("New Folder", uri);
             const files = await getMetadataFromDirectory(uri);
-            console.log(files);
+            console.log(files.map(file => console.log(file.title)));
         } catch (err) {
             console.log(err);
         }

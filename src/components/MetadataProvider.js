@@ -1,5 +1,5 @@
 import {createContext, useEffect, useState} from "react";
-import {View} from "react-native";
+import {Alert, View} from "react-native";
 import {Reader, useReader} from "@epubjs-react-native/core";
 import {useFileSystem} from "@epubjs-react-native/expo-file-system";
 import tempCopyToCache from "../utils/tempCopyToCache";
@@ -10,86 +10,77 @@ export const MetadataContext = createContext([]);
 
 // TODO: Optimize this sh. Cannot use batches. Seems like books cannot be rendered in batch.
 const MetadataProvider = ({children}) => {
-    const {getMeta} = useReader();
-    const [uriList, setUriList] = useState([]);
-    const [metadataList, setMetadataList] = useState([]);
+    const {getMeta, isRendering, isLoading} = useReader();
+
     const [currentSrc, setCurrentSrc] = useState(null);
-    const [currentUriIndex, setCurrentUriIndex] = useState(null);
-    const [isDone, setIsDone] = useState(true);
-    const [onDone, setOnDone] = useState(null);
+    const [currentOnReady, setCurrentOnReady] = useState(null);
+    const [spinner, setSpinner] = useState(null);
+    const [shouldStop, setShouldStop] = useState(false);
 
-    function extractMetadataFromUriList(uriList, onDone) {
-        setUriList(uriList);
-        setIsDone(false);
-        setOnDone(() => onDone);
-    }
-
-    function onReadyHandler() {
-        const metadata = getMeta();
-        setMetadataList(prevState => [...prevState, metadata]);
+    function reset() {
         setCurrentSrc(null);
-        setCurrentUriIndex(prev => prev + 1);
+        setCurrentOnReady(null);
+        setSpinner(null);
+        setShouldStop(false);
     }
 
-    function handleDone(returnValue) {
-        setIsDone(true);
-        setCurrentSrc(null);
-        setCurrentUriIndex(null);
-        setMetadataList([]);
-        setUriList([]);
-        onDone(returnValue);
-        setOnDone(null);
-    }
+    async function extractMetadataFromUriList(uriList) {
+        reset();
+        let metadataList = [];
 
-    function discard() {
-        handleDone([]);
-    }
-
-    useEffect(() => {
-        if (uriList.length > 0) {
-            setCurrentUriIndex(0);
-        }
-    }, [uriList]);
-
-    useEffect(() => {
-        (async function processCurrentUri() {
-            if (currentUriIndex !== null && currentUriIndex < uriList.length) {
-                const bookContent = await tempCopyToCache(uriList[currentUriIndex]);
-                setCurrentSrc(bookContent);
+        for (let i = 0; i < uriList.length; i++) {
+            console.log(i);
+            if (shouldStop) {
+                reset();
+                return [];
             }
-        })();
-    }, [currentUriIndex]);
+
+            const fileContent = await tempCopyToCache(uriList[i]);
+            await new Promise((resolve) => {
+                setCurrentSrc(() => {
+                    console.log(fileContent.slice(1, 50) + " " + i)
+                    return fileContent
+                });
+
+                setCurrentOnReady(() =>
+                    (meta) => {
+                        metadataList.push(meta);
+                        console.log("Got meta " + meta.title);
+                        resolve();
+                    }
+                );
+                setSpinner(
+                    <LoadingSpinner
+                        progressText={`${i + 1}/${uriList.length}`}
+                        label={`Loading file: ${getFilename(uriList[i])}`}
+                        onDiscard={() => setShouldStop(true)}
+                    />
+                );
+            })
+        }
+        reset();
+        return metadataList;
+    }
 
     useEffect(() => {
-        if ((metadataList.length > 0 && uriList.length > 0) && (metadataList.length === uriList.length)) {
-            handleDone(metadataList)
+        if (!isRendering && currentOnReady) {
+            currentOnReady(getMeta());
         }
-    }, [metadataList, uriList]);
-
+    }, [isRendering]);
     return (
         <MetadataContext.Provider value={{extractMetadataFromUriList}}>
             {children}
-            {
-                currentSrc &&
-                <View style={{position: "absolute", opacity: 0}}>
+            {currentSrc &&
+                <View style={{position: "absolute", opacity: 1}}>
                     {/* Won't render if height and width is not set */}
                     <Reader
                         src={currentSrc}
-                        height={1}
-                        width={1}
+                        height={500}
+                        width={500}
                         fileSystem={useFileSystem}
-                        onReady={onReadyHandler}
                     />
-                </View>
-            }
-            {
-                !isDone && uriList &&
-                <LoadingSpinner
-                    progressText={`${currentUriIndex + 1}/${uriList.length}`}
-                    label={`Loading file: ${getFilename(uriList[currentUriIndex])}`}
-                    onDiscard={discard}
-                />
-            }
+                </View>}
+            {spinner}
         </MetadataContext.Provider>
     );
 };
