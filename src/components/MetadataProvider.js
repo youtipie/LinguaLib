@@ -5,6 +5,7 @@ import {useFileSystem} from "@epubjs-react-native/expo-file-system";
 import tempCopyToCache from "../utils/tempCopyToCache";
 import LoadingSpinner from "../UI/LoadingSpinner";
 import getFilename from "../utils/getFilename";
+import {BookDAO} from "../database";
 
 export const MetadataContext = createContext([]);
 
@@ -12,6 +13,7 @@ export const MetadataContext = createContext([]);
 const MetadataProvider = ({children}) => {
     const {getMeta} = useReader();
     const [uriList, setUriList] = useState([]);
+    const [existingUriList, setExistingUriList] = useState([]);
     const [metadataList, setMetadataList] = useState([]);
     const [currentSrc, setCurrentSrc] = useState(null);
     const [currentUriIndex, setCurrentUriIndex] = useState(null);
@@ -19,14 +21,19 @@ const MetadataProvider = ({children}) => {
     const [onDone, setOnDone] = useState(null);
 
     function extractMetadataFromUriList(uriList, onDone) {
-        setUriList(uriList);
-        setIsDone(false);
-        setOnDone(() => onDone);
+        (async () => {
+            const existingBooks = await BookDAO.queryAllBooks().fetch();
+            const existingUris = existingBooks.map(book => book.uri);
+            setExistingUriList(existingUris);
+            setUriList(uriList);
+            setIsDone(false);
+            setOnDone(() => onDone);
+        })();
     }
 
     function onReadyHandler() {
         const metadata = getMeta();
-        setMetadataList(prevState => [...prevState, metadata]);
+        setMetadataList(prevState => [...prevState, {...metadata, uri: uriList[currentUriIndex]}]);
         setCurrentSrc(null);
         setCurrentUriIndex(prev => prev + 1);
     }
@@ -37,6 +44,7 @@ const MetadataProvider = ({children}) => {
         setCurrentUriIndex(null);
         setMetadataList([]);
         setUriList([]);
+        setExistingUriList([]);
         onDone(returnValue);
         setOnDone(null);
     }
@@ -52,19 +60,23 @@ const MetadataProvider = ({children}) => {
     }, [uriList]);
 
     useEffect(() => {
+
         (async function processCurrentUri() {
+            if (currentUriIndex >= uriList.length && uriList.length > 0) {
+                handleDone(metadataList);
+                return
+            }
+
             if (currentUriIndex !== null && currentUriIndex < uriList.length) {
-                const bookContent = await tempCopyToCache(uriList[currentUriIndex]);
-                setCurrentSrc(bookContent);
+                if (existingUriList.includes(uriList[currentUriIndex])) {
+                    setCurrentUriIndex(prev => prev + 1);
+                } else {
+                    const bookContent = await tempCopyToCache(uriList[currentUriIndex]);
+                    setCurrentSrc(bookContent);
+                }
             }
         })();
     }, [currentUriIndex]);
-
-    useEffect(() => {
-        if ((metadataList.length > 0 && uriList.length > 0) && (metadataList.length === uriList.length)) {
-            handleDone(metadataList)
-        }
-    }, [metadataList, uriList]);
 
     return (
         <MetadataContext.Provider value={{extractMetadataFromUriList}}>

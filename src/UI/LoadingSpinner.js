@@ -7,12 +7,14 @@ const LoadingSpinner = ({label, progressText, onDiscard}) => {
     const [spinnerHeight, setSpinnerHeight] = useState(0);
 
     useEffect(() => {
-        const backListener = BackHandler.addEventListener("hardwareBackPress", () => {
-            onDiscard();
-            return true;
-        })
+        if (onDiscard) {
+            const backListener = BackHandler.addEventListener("hardwareBackPress", () => {
+                onDiscard();
+                return true;
+            })
 
-        return () => backListener.remove();
+            return () => backListener.remove();
+        }
     }, [onDiscard]);
 
     return (

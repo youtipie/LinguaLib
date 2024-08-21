@@ -7,6 +7,7 @@ import FolderMenu from "./FolderMenu";
 import CardWithIcons from "../../../UI/CardWithIcons";
 import InputField from "../../../UI/InputField";
 import useModal from "../../../hooks/useModal";
+import {withObservables} from "@nozbe/watermelondb/react";
 
 const FolderCard = ({folder, onEdit, onDelete}) => {
     const [title, setTitle] = useState(folder.title);
@@ -80,7 +81,11 @@ const FolderCard = ({folder, onEdit, onDelete}) => {
     );
 };
 
-export default FolderCard;
+const enhance = withObservables(["folder"], ({folder, onEdit, onDelete}) => ({
+    folder: folder
+}));
+
+export default enhance(FolderCard);
 
 const styles = StyleSheet.create({
     textWrapper: {
