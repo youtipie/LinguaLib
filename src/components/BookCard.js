@@ -3,33 +3,40 @@ import {colors, fonts} from "../constants/styles";
 import {horizontalScale, moderateScale, verticalScale} from "../utils/metrics";
 import {useNavigation} from "@react-navigation/native";
 
-const BookCard = ({id, title, author, progress, coverUri}) => {
+const BookCard = ({book}) => {
     const navigation = useNavigation();
 
     function handleImgPress() {
-        navigation.navigate("ReadBook", {bookId: id});
+        navigation.navigate("ReadBook", {bookId: book.id});
     }
 
     function handleCardPress() {
-        navigation.navigate("Details", {bookId: id});
+        navigation.navigate("Details", {bookId: book.id});
     }
 
-    const progressWidthStyle = {width: `${Math.trunc(progress * 100)}%`};
+    const progressWidthStyle = {width: `${Math.trunc(book.progress * 100)}%`};
 
     return (
-        <View style={styles.container}>
-            <Pressable onPress={handleImgPress}>
-                <View style={styles.progressBarWrapper}>
-                    <View style={[styles.progressBar, progressWidthStyle]}></View>
-                </View>
-                <Image style={styles.coverImg} source={{uri: coverUri}}/>
-            </Pressable>
-            <Pressable onPress={handleCardPress}>
-                <View style={styles.textWrapper}>
-                    <Text style={styles.title}>{title}</Text>
-                    <Text style={styles.subtitle}>{author}</Text>
-                </View>
-            </Pressable>
+        <View style={[styles.container, book.isBlank && {opacity: 0}]}>
+
+            {book.isBlank ?
+                <View style={{flex: 1}}></View>
+                :
+                <>
+                    <Pressable onPress={handleImgPress}>
+                        <View style={styles.progressBarWrapper}>
+                            <View style={[styles.progressBar, progressWidthStyle]}></View>
+                        </View>
+                        <Image style={styles.coverImg} source={{uri: book.cover}}/>
+                    </Pressable>
+                    <Pressable onPress={handleCardPress}>
+                        <View style={styles.textWrapper}>
+                            <Text style={styles.title}>{book.title}</Text>
+                            <Text style={styles.subtitle}>{book.author}</Text>
+                        </View>
+                    </Pressable>
+                </>
+            }
         </View>
     );
 };
@@ -60,6 +67,7 @@ const styles = StyleSheet.create({
         color: colors.textAccent100,
         fontFamily: fonts.primaryRegular,
         fontSize: moderateScale(12),
+        marginTop: "auto",
     },
     progressBarWrapper: {
         position: "absolute",

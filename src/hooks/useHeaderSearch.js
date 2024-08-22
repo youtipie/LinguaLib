@@ -1,16 +1,16 @@
 import {useEffect, useLayoutEffect, useState} from 'react';
 import HeaderSearchButton from "../components/navigation/HeaderSearchButton";
 
-const UseHeaderSearch = ({navigation, books, setBooks}) => {
+/**
+ * Hook to add a search input to the navigation header and sync its value with route params.
+ *
+ * @param {object} navigation - Navigation object from React Navigation.
+ */
+const UseHeaderSearch = ({navigation}) => {
     const [inputValue, setInputValue] = useState("");
 
     useEffect(() => {
-        if (inputValue) {
-            const filteredBooks = books.filter((book) => book.title.toLowerCase().includes(inputValue.toLowerCase()));
-            setBooks(filteredBooks);
-        } else {
-            setBooks(books);
-        }
+        navigation.setParams({inputValue})
     }, [inputValue]);
 
     useLayoutEffect(() => {

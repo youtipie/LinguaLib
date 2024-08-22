@@ -59,7 +59,7 @@ const Details = ({route}) => {
         <ScrollView contentContainerStyle={styles.root}>
             <View style={styles.card}>
                 <View style={styles.posterWrapper}>
-                    <Image style={styles.poster} source={{uri: book.coverUri}}/>
+                    <Image style={styles.poster} source={{uri: book.cover}}/>
                     <View style={styles.titleWrapper}>
                         {
                             isEditing ?
