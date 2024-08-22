@@ -7,11 +7,7 @@ const UseGetMetadataFromDirectory = () => {
 
     async function getMetadataFromDirectoryWrapper(directoryUri) {
         const uriList = (await StorageAccessFramework.readDirectoryAsync(directoryUri)).filter(element => element.endsWith(".epub"));
-        return new Promise(resolve => {
-            extractMetadataFromUriList(uriList, (metadataList) => {
-                resolve(metadataList);
-            });
-        });
+        return extractMetadataFromUriList(uriList);
     }
 
     return {getMetadataFromDirectory: getMetadataFromDirectoryWrapper};
