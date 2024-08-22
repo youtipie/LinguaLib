@@ -1,5 +1,5 @@
-import {createContext, useEffect, useState} from "react";
-import {Alert, View} from "react-native";
+import {createContext, useState} from "react";
+import {View} from "react-native";
 import {Reader, useReader} from "@epubjs-react-native/core";
 import {useFileSystem} from "@epubjs-react-native/expo-file-system";
 import tempCopyToCache from "../utils/tempCopyToCache";
@@ -8,81 +8,81 @@ import getFilename from "../utils/getFilename";
 
 export const MetadataContext = createContext([]);
 
-// TODO: Optimize this sh. Cannot use batches. Seems like books cannot be rendered in batch.
 const MetadataProvider = ({children}) => {
-    const {getMeta, isRendering, isLoading} = useReader();
-
-    const [currentSrc, setCurrentSrc] = useState(null);
-    const [currentOnReady, setCurrentOnReady] = useState(null);
+    const [currentBook, setCurrentBook] = useState(null);
     const [spinner, setSpinner] = useState(null);
-    const [shouldStop, setShouldStop] = useState(false);
 
     function reset() {
-        setCurrentSrc(null);
-        setCurrentOnReady(null);
+        setCurrentBook(null);
         setSpinner(null);
-        setShouldStop(false);
     }
 
     async function extractMetadataFromUriList(uriList) {
         reset();
         let metadataList = [];
+        let shouldStop = false;
 
         for (let i = 0; i < uriList.length; i++) {
-            console.log(i);
             if (shouldStop) {
                 reset();
                 return [];
             }
-
-            const fileContent = await tempCopyToCache(uriList[i]);
-            await new Promise((resolve) => {
-                setCurrentSrc(() => {
-                    console.log(fileContent.slice(1, 50) + " " + i)
-                    return fileContent
+            try {
+                const meta = await new Promise(async (resolve) => {
+                    // TODO: Make exit immediate
+                    setSpinner(
+                        <LoadingSpinner
+                            progressText={`${i + 1}/${uriList.length}`}
+                            label={`Loading file: ${getFilename(uriList[i])}`}
+                            onDiscard={() => {
+                                shouldStop = true;
+                                resolve(null);
+                            }}
+                        />
+                    );
+                    const fileContent = await tempCopyToCache(uriList[i]);
+                    setCurrentBook(<MetadataHelper src={fileContent} onReady={resolve}/>);
                 });
-
-                setCurrentOnReady(() =>
-                    (meta) => {
-                        metadataList.push(meta);
-                        console.log("Got meta " + meta.title);
-                        resolve();
-                    }
-                );
-                setSpinner(
-                    <LoadingSpinner
-                        progressText={`${i + 1}/${uriList.length}`}
-                        label={`Loading file: ${getFilename(uriList[i])}`}
-                        onDiscard={() => setShouldStop(true)}
-                    />
-                );
-            })
+                metadataList.push(meta);
+                setCurrentBook(null);
+            } catch (e) {
+                console.log(e);
+                reset();
+                return [];
+            }
         }
         reset();
         return metadataList;
     }
 
-    useEffect(() => {
-        if (!isRendering && currentOnReady) {
-            currentOnReady(getMeta());
-        }
-    }, [isRendering]);
     return (
         <MetadataContext.Provider value={{extractMetadataFromUriList}}>
             {children}
-            {currentSrc &&
-                <View style={{position: "absolute", opacity: 1}}>
-                    {/* Won't render if height and width is not set */}
-                    <Reader
-                        src={currentSrc}
-                        height={500}
-                        width={500}
-                        fileSystem={useFileSystem}
-                    />
-                </View>}
+            {currentBook}
             {spinner}
         </MetadataContext.Provider>
     );
 };
 
+const MetadataHelper = ({src, onReady}) => {
+    const {getMeta} = useReader();
+
+    function handleReady() {
+        const meta = getMeta();
+        onReady(meta);
+    }
+
+    return (
+        <View style={{position: "absolute", width: "100%", height: "100%", opacity: 0}}>
+            {/* Won't render if height and width is not set */}
+            <Reader
+                src={src}
+                height={1}
+                width={1}
+                fileSystem={useFileSystem}
+                onReady={handleReady}
+            />
+        </View>
+    );
+};
 export default MetadataProvider;
