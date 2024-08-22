@@ -5,7 +5,6 @@ import {useFileSystem} from "@epubjs-react-native/expo-file-system";
 import tempCopyToCache from "../utils/tempCopyToCache";
 import LoadingSpinner from "../UI/LoadingSpinner";
 import getFilename from "../utils/getFilename";
-import {BookDAO} from "../database";
 
 export const MetadataContext = createContext([]);
 
@@ -24,14 +23,7 @@ const MetadataProvider = ({children}) => {
         let metadataList = [];
         let shouldStop = false;
 
-        const existingBooks = await BookDAO.queryAllBooks().fetch();
-        const existingUris = existingBooks.map(book => book.uri);
-
         for (let i = 0; i < uriList.length; i++) {
-            if (existingUris.includes(uriList[i])) {
-                continue;
-            }
-
             if (shouldStop) {
                 reset();
                 return [];
