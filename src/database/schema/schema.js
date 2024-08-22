@@ -18,7 +18,7 @@ export default appSchema({
                 {name: "cover", type: "string"},
                 {name: "author", type: "string"},
                 {name: "uri", type: "string"},
-                {name: "annotation", type: "string"},
+                {name: "description", type: "string"},
                 {name: "language", type: "string"},
                 {name: "progress", type: "number"},
                 {name: "is_finished", type: "boolean"},

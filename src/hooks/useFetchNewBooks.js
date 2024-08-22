@@ -9,8 +9,7 @@ const UseFetchNewBooks = () => {
             const folders = await FolderDAO.getFolders();
             for (let folder of folders) {
                 const books = await getMetadataFromDirectory(folder.uri);
-                await BookDAO.batchAddBooks(books.map(book => ({...book, annotation: book.description})));
-                console.log("Fetched: " + books.length);
+                await BookDAO.batchAddBooks(books);
             }
             return true;
         } catch (e) {

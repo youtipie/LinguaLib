@@ -11,7 +11,7 @@ export default class Book extends Model {
     @text("cover") cover
     @text("author") author
     @text("uri") uri
-    @text("annotation") annotation
+    @text("description") description
     @text("language") language
     @field("progress") progress
     @field("is_finished") isFinished

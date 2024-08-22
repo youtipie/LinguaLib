@@ -13,7 +13,7 @@ import LanguageSelectMenu from "./components/LanguageSelectMenu";
 import UseEditBook from "../../hooks/useEditBook";
 
 const mockBookDetails = {
-    annotation: "Geralt is a Witcher, a man whose magic powers, enhanced by long training and a mysterious elixir, " +
+    description: "Geralt is a Witcher, a man whose magic powers, enhanced by long training and a mysterious elixir, " +
         "have made him a brilliant fighter and a merciless hunter. Yet he is no ordinary killer. His sole purpose: " +
         "to destroy the monsters that plague the world.",
     folder: mockFolderData[0],
@@ -36,7 +36,7 @@ const Details = ({route}) => {
     const [form, setForm] = useState({
         title: book.title,
         author: book.author,
-        annotation: book.annotation,
+        description: book.description,
         language: book.language,
         folder: book.folder
     });

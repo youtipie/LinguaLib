@@ -27,7 +27,7 @@ export default {
                     book.author = bookData.author;
                     book.title = bookData.title;
                     book.uri = bookData.uri;
-                    book.annotation = bookData.annotation;
+                    book.description = bookData.description;
                     book.language = bookData.language;
                     book.progress = 0;
                     book.isFinished = false;
