@@ -1,5 +1,7 @@
 import database from "../database";
 import {Q} from "@nozbe/watermelondb";
+import escapeTags from "../../utils/escapeTags";
+import {getLanguageByCode} from "../../utils/languageManager";
 
 const books = database.collections.get("books");
 
@@ -17,9 +19,10 @@ export default {
     queryAllBooks: () => books.query(),
     queryReadingNowBooks: () => queryBooks(false),
     queryFinishedBooks: () => queryBooks(true),
+    observeById: (id) => books.findAndObserve(id),
     querySearchReadingNowBooks: (searchValue) => queryBooks(false, searchValue),
     querySearchFinishedBooks: (searchValue) => queryBooks(true, searchValue),
-    batchAddBooks: async (booksData) => {
+    batchAddBooks: async (booksData, folder) => {
         await database.write(async () => {
             const newBooks = booksData.map(bookData =>
                 books.prepareCreate(book => {
@@ -27,10 +30,14 @@ export default {
                     book.author = bookData.author;
                     book.title = bookData.title;
                     book.uri = bookData.uri;
-                    book.description = bookData.description;
-                    book.language = bookData.language;
+                    book.description = escapeTags(bookData.description);
+                    book.language = getLanguageByCode(bookData.language);
                     book.progress = 0;
+                    book.totalPages = bookData.totalPages;
+                    book.page = 0;
+                    book.timeSpent = 0;
                     book.isFinished = false;
+                    book.folder.set(folder);
                 })
             )
             await database.batch(newBooks);

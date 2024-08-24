@@ -1,21 +1,26 @@
 import SelectDropdown from 'react-native-select-dropdown';
 import {View, StyleSheet, Text} from "react-native";
 import {colors, commonIcons, commonStyles, folderIcons} from "../../../constants/styles";
-import {mockFolderData} from "../../../constants/other";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {horizontalScale, moderateScale, verticalScale} from "../../../utils/metrics";
+import {withObservables} from "@nozbe/watermelondb/react";
+import FolderDAO from "../../../database/DAO/FolderDAO";
+import getAbsolutePath from "../../../utils/getAbsolutePath";
 
 
-const FolderSelect = ({onSelect, defaultValue}) => {
+const FolderSelect = ({onSelect, defaultValue, folders}) => {
+    const defaultValueData = {id: defaultValue.id, title: defaultValue.title, uri: defaultValue.uri};
+    const foldersData = folders.map(folder => ({id: folder.id, title: folder.title, uri: folder.uri}))
+
     return (
         <SelectDropdown
-            data={mockFolderData}
+            data={foldersData}
             onSelect={(selectedItem) => onSelect(selectedItem)}
             renderButton={(selectedItem, isOpen) => {
                 return (
                     <View style={styles.triggerButton}>
                         <Text style={commonStyles.detailText}>
-                            {(selectedItem && selectedItem.title) || defaultValue.title}
+                            {(selectedItem && selectedItem.title) || defaultValueData.title}
                         </Text>
                         <FontAwesomeIcon
                             style={styles.caretIcon}
@@ -36,18 +41,22 @@ const FolderSelect = ({onSelect, defaultValue}) => {
                             color={isSelected ? colors.success200 : colors.textPrimary200}
                         />
                         <Text
-                            style={[commonStyles.detailText, (isSelected && {color: colors.success200})]}>{item.title} ({item.path})</Text>
+                            style={[commonStyles.detailText, (isSelected && {color: colors.success200})]}>{item.title} ({getAbsolutePath(item.uri)})</Text>
                     </View>
                 );
             }}
             dropdownStyle={styles.dropdownMenu}
             dropdownOverlayColor={"transparent"}
-            defaultValue={defaultValue}
+            defaultValue={defaultValueData}
         />
     );
 };
 
-export default FolderSelect;
+const enhance = withObservables([], ({onSelect, defaultValue}) => ({
+    folders: FolderDAO.observeFolders()
+}));
+
+export default enhance(FolderSelect);
 
 const styles = StyleSheet.create({
     triggerButton: {

@@ -21,6 +21,9 @@ export default appSchema({
                 {name: "description", type: "string"},
                 {name: "language", type: "string"},
                 {name: "progress", type: "number"},
+                {name: "total_pages", type: "number"},
+                {name: "page", type: "number"},
+                {name: "time_spent", type: "number"},
                 {name: "is_finished", type: "boolean"},
                 {name: "folder_id", type: "string", isIndexed: true},
                 {name: "last_interaction_at", type: "number"}

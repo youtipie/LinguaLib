@@ -7,7 +7,7 @@ import {
     Text,
     RefreshControl,
 } from "react-native";
-import BookCard from "./BookCard";
+import BookCard, {EnhancedBookCard} from "./BookCard";
 import {colors, fonts} from "../constants/styles";
 import {moderateScale, verticalScale} from "../utils/metrics";
 import useFetchNewBooks from "../hooks/useFetchNewBooks";
@@ -36,7 +36,12 @@ const BookList = ({books, isAbleToFetchNewBooks = false}) => {
                 data={books}
                 keyExtractor={item => item.id}
                 numColumns={2}
-                renderItem={(itemData) => <BookCard book={itemData.item}/>}
+                renderItem={(itemData) => {
+                    if (itemData.item.isBlank) {
+                        return <BookCard book={itemData.item}/>
+                    }
+                    return <EnhancedBookCard book={itemData.item}/>
+                }}
                 contentContainerStyle={styles.contentContainer}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh}/>}
                 ListEmptyComponent={

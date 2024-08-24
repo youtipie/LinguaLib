@@ -25,7 +25,12 @@ export default class Folder extends Model {
     }
 
     @writer
-    async delete() {
+    async delete(force = false) {
+        if ((await this.books.fetch()).length > 0 && !force) {
+            return false;
+        }
+        await this.books.destroyAllPermanently();
         await this.destroyPermanently();
+        return true;
     }
 }

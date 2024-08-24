@@ -1,6 +1,7 @@
 import {StorageAccessFramework} from "expo-file-system";
-import {BookDAO, FolderDAO} from "../database";
 import UseGetMetadataFromUriList from "./UseGetMetadataFromUriList";
+import BookDAO from "../database/DAO/BookDAO";
+import FolderDAO from "../database/DAO/FolderDAO";
 
 const UseFetchNewBooks = () => {
     const {extractMetadataFromUriList} = UseGetMetadataFromUriList();
@@ -15,7 +16,7 @@ const UseFetchNewBooks = () => {
                 const uriList = (await StorageAccessFramework.readDirectoryAsync(folder.uri)).filter(element => element.endsWith(".epub"));
                 const excludedUriList = uriList.filter(uri => !existingUris.includes(uri));
                 const books = await extractMetadataFromUriList(excludedUriList);
-                await BookDAO.batchAddBooks(books);
+                await BookDAO.batchAddBooks(books, folder);
             }
 
             return true;

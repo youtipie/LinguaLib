@@ -1,13 +1,15 @@
-import {createContext, useState} from "react";
+import {createContext, useEffect, useState} from "react";
 import {View} from "react-native";
 import {Reader, useReader} from "@epubjs-react-native/core";
 import {useFileSystem} from "@epubjs-react-native/expo-file-system";
 import tempCopyToCache from "../utils/tempCopyToCache";
 import LoadingSpinner from "../UI/LoadingSpinner";
 import getFilename from "../utils/getFilename";
+import {delay} from "@reduxjs/toolkit/src/utils";
 
 export const MetadataContext = createContext([]);
 
+// TODO: Add exception handling if book is corrupted or etc
 const MetadataProvider = ({children}) => {
     const [currentBook, setCurrentBook] = useState(null);
     const [spinner, setSpinner] = useState(null);
@@ -63,29 +65,35 @@ const MetadataProvider = ({children}) => {
     return (
         <MetadataContext.Provider value={{extractMetadataFromUriList}}>
             {children}
-            {currentBook}
+            {currentBook !== null && currentBook}
             {spinner}
         </MetadataContext.Provider>
     );
 };
 
+// Extraction is very long, due to having to wait for locations.
 const MetadataHelper = ({src, onReady}) => {
-    const {getMeta} = useReader();
-
-    function handleReady() {
-        const meta = getMeta();
-        onReady(meta);
-    }
+    const {getMeta, goNext} = useReader();
 
     return (
-        <View style={{position: "absolute", width: "100%", height: "100%", opacity: 0}}>
+        <View style={{position: "absolute", opacity: 0}}>
             {/* Won't render if height and width is not set */}
             <Reader
                 src={src}
                 height={1}
                 width={1}
+                onLocationsReady={(e, locations) => {
+                    // Triggering onLocationChange, because we cannot get totalLocations from onLocationReady
+                    // (It is always 0)
+                    goNext()
+                }}
+                onLocationChange={(totalLocations, current, progress) => {
+                    if (totalLocations) {
+                        onReady({...getMeta(), totalPages: totalLocations});
+                    }
+                }}
                 fileSystem={useFileSystem}
-                onReady={handleReady}
+                waitForLocationsReady
             />
         </View>
     );

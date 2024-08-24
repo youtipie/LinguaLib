@@ -1,44 +1,26 @@
+import {useState} from "react";
 import {ScrollView, View, StyleSheet, Image, Text} from "react-native";
-import {mockBooks, mockFolderData} from "../../constants/other";
 import {colors, commonStyles, folderIcons, fonts} from "../../constants/styles";
 import {horizontalScale, moderateScale, verticalScale} from "../../utils/metrics";
 import DetailsItem from "./components/DetailsItem";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import AnimatedTextExpand from "../../UI/AnimatedTextExpand";
-import {useState} from "react";
 import minutesToTimeString from "../../utils/minutesToTimeString";
 import InputField from "../../UI/InputField";
 import FolderSelect from "./components/FolderSelect";
 import LanguageSelectMenu from "./components/LanguageSelectMenu";
 import UseEditBook from "../../hooks/useEditBook";
+import {compose, withObservables} from "@nozbe/watermelondb/react";
+import BookDAO from "../../database/DAO/BookDAO";
 
-const mockBookDetails = {
-    description: "Geralt is a Witcher, a man whose magic powers, enhanced by long training and a mysterious elixir, " +
-        "have made him a brilliant fighter and a merciless hunter. Yet he is no ordinary killer. His sole purpose: " +
-        "to destroy the monsters that plague the world.",
-    folder: mockFolderData[0],
-    language: "English",
-    timeSpent: 70,
-    page: 127,
-    totalPages: 924,
-    filename: "the-witcher.epub",
-}
 
-const Details = ({route}) => {
-    const {bookId} = route.params;
-
-    // Just mock data. Will remove later. Don't want to bother adding this to all books.
-    const [book, setBook] = useState({
-        ...mockBooks.find(book => book.id === bookId),
-        ...mockBookDetails
-    });
-
+const Details = ({book, folder}) => {
     const [form, setForm] = useState({
         title: book.title,
         author: book.author,
         description: book.description,
         language: book.language,
-        folder: book.folder
+        folder: folder
     });
 
     function updateForm(name, value) {
@@ -46,14 +28,11 @@ const Details = ({route}) => {
         );
     }
 
-    function onSubmit() {
-        setBook(prevState => ({
-            ...prevState,
-            ...form,
-        }));
+    async function onSubmit() {
+        await book.changeMeta(form.title, form.author, form.description, form.language, form.folder);
     }
 
-    const isEditing = UseEditBook({bookId, form, onSubmit});
+    const isEditing = UseEditBook({bookId: book.id, form, onSubmit});
 
     return (
         <ScrollView contentContainerStyle={styles.root}>
@@ -83,32 +62,31 @@ const Details = ({route}) => {
                         defaultValue={book.author}
                         onChangeText={(value) => updateForm("author", value)}
                     />
-                    {
-                        isEditing ?
-                            <DetailsItem
-                                title="Annotation"
-                                content={book.annotation}
-                                isEditing={isEditing}
-                                defaultValue={book.annotation}
-                                onChangeText={(value) => updateForm("annotation", value)}
-                            />
-                            :
-                            (
-                                book.annotation.length <= 100 ?
-                                    <DetailsItem
-                                        title="Annotation"
-                                        content={book.annotation}
+                    {isEditing ?
+                        <DetailsItem
+                            title="Annotation"
+                            content={book.description}
+                            isEditing={isEditing}
+                            defaultValue={book.description}
+                            onChangeText={(value) => updateForm("description", value)}
+                        />
+                        :
+                        (
+                            book.description.length <= 100 ?
+                                <DetailsItem
+                                    title="Annotation"
+                                    content={book.description}
+                                />
+                                :
+                                <DetailsItem title="Annotation">
+                                    <AnimatedTextExpand
+                                        startText={book.description.slice(0, 100)}
+                                        endText={book.description.slice(100, book.description.length)}
+                                        textStyle={commonStyles.detailText}
+                                        addEllipsis={true}
                                     />
-                                    :
-                                    <DetailsItem title="Annotation">
-                                        <AnimatedTextExpand
-                                            startText={book.annotation.slice(0, 100)}
-                                            endText={book.annotation.slice(100, book.annotation.length)}
-                                            textStyle={commonStyles.detailText}
-                                            addEllipsis={true}
-                                        />
-                                    </DetailsItem>
-                            )
+                                </DetailsItem>
+                        )
                     }
                     {isEditing ?
                         <LanguageSelectMenu
@@ -141,12 +119,12 @@ const Details = ({route}) => {
                             {isEditing ?
                                 <FolderSelect
                                     onSelect={(value) => updateForm("folder", value)}
-                                    defaultValue={book.folder}
+                                    defaultValue={folder}
                                 />
                                 :
                                 <AnimatedTextExpand
-                                    startText={book.folder.title}
-                                    endText={` => ${book.folder.path}/${book.filename}`}
+                                    startText={folder.title}
+                                    endText={` => ${folder.path}/${book.filename}`}
                                     textStyle={commonStyles.detailText}
                                 />
                             }
@@ -158,7 +136,16 @@ const Details = ({route}) => {
     );
 };
 
-export default Details;
+const enhance = compose(
+    withObservables(["route"], ({route}) => ({
+        book: BookDAO.observeById(route.params?.bookId)
+    })),
+    withObservables(["book"], ({book}) => ({
+        folder: book.folder
+    }))
+);
+
+export default enhance(Details);
 
 const styles = StyleSheet.create({
     root: {
@@ -197,7 +184,8 @@ const styles = StyleSheet.create({
     },
     folderDetails: {
         flexDirection: "row",
-        alignItems: "center"
+        alignItems: "center",
+        width: "90%",
     },
     folderIcon: {
         marginRight: horizontalScale(5)

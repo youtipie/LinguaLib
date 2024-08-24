@@ -2,6 +2,7 @@ import {View, StyleSheet, Image, Pressable, Text} from "react-native";
 import {colors, fonts} from "../constants/styles";
 import {horizontalScale, moderateScale, verticalScale} from "../utils/metrics";
 import {useNavigation} from "@react-navigation/native";
+import {withObservables} from "@nozbe/watermelondb/react";
 
 const BookCard = ({book}) => {
     const navigation = useNavigation();
@@ -41,6 +42,11 @@ const BookCard = ({book}) => {
     );
 };
 
+const enhance = withObservables(["book"], ({book}) => ({
+    book
+}));
+
+export const EnhancedBookCard = enhance(BookCard);
 export default BookCard;
 
 const styles = StyleSheet.create({

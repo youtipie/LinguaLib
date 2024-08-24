@@ -1,9 +1,9 @@
 import BookList from "../components/BookList";
 import {useEffect} from "react";
 import {withObservables} from "@nozbe/watermelondb/react";
-import {BookDAO} from "../database";
 import useFetchNewBooks from "../hooks/useFetchNewBooks";
 import useHeaderSearch from "../hooks/useHeaderSearch";
+import BookDAO from "../database/DAO/BookDAO";
 
 
 const ReadingNow = ({navigation, books}) => {

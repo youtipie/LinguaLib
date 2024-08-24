@@ -1,24 +1,14 @@
+import {useState} from "react";
+import {Text, View} from "react-native";
+import {renderers,} from "react-native-popup-menu";
+import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import MenuWrapper from "../../../components/Menu/MenuWrapper";
 import {colors, commonIcons, commonStyles} from "../../../constants/styles";
 import {horizontalScale, moderateScale, verticalScale} from "../../../utils/metrics";
-import countryFlagEmoji from "country-flag-emoji";
 import MenuItem from "../../../components/Menu/MenuItem";
-import {Text, View} from "react-native";
-import {renderers,} from "react-native-popup-menu";
 import DetailsItem from "./DetailsItem";
-import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
-import {useState} from "react";
+import {languageIconList} from "../../../utils/languageManager";
 
-const countryLanguage = require('country-language');
-
-// TODO: Find good way of getting languages and their flag icons
-const options = countryFlagEmoji.list.reduce((results, country) => {
-    const lang = countryLanguage.getCountry(country.code).langCultureMs?.[0]?.displayName?.split(" ")[0];
-    if (lang) {
-        results.push({language: lang, icon: country.emoji});
-    }
-    return results;
-}, []);
 
 const LanguageSelectMenu = ({defaultValue, onSelect}) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -46,7 +36,7 @@ const LanguageSelectMenu = ({defaultValue, onSelect}) => {
                     </View>
                 </DetailsItem>
             }
-            options={options}
+            options={languageIconList}
             menuItem={(option, index) => (
                 <MenuItem
                     key={index}

@@ -6,12 +6,14 @@ import CardWithIcons from "../../UI/CardWithIcons";
 import {StorageAccessFramework} from "expo-file-system";
 import FolderCard from "./components/FolderCard";
 import {withObservables} from "@nozbe/watermelondb/react";
-import {FolderDAO} from "../../database";
+import FolderDAO from "../../database/DAO/FolderDAO";
+import useModal from "../../hooks/useModal";
 
 
 // TODO: Remove root folder definition or thinks something to replace it.
 //  FS cannot get access to /downloads or root folder
 const Folders = ({folders}) => {
+    const {showModal} = useModal()
 
     async function handleAddFolder() {
         const permissions = await StorageAccessFramework.requestDirectoryPermissionsAsync();
@@ -41,7 +43,18 @@ const Folders = ({folders}) => {
     }
 
     async function handleDeleteFolder(folder) {
-        await folder.delete()
+        const result = await folder.delete();
+        if (!result) {
+            showModal(
+                "Confirm action",
+                "Are you sure you want to continue? This folder contains books. If you delete it, all book data (progress, translations) will be deleted.",
+                "Cancel",
+                () => {
+                },
+                "Continue",
+                async () => await folder.delete(true),
+            );
+        }
     }
 
     return (

@@ -6,7 +6,7 @@ import {
     faCheck, faCheckCircle, faCircleExclamation, faCirclePlus, faCircleXmark, faEllipsis, faEllipsisVertical,
     faExclamation,
     faFolder,
-    faGear, faPen, faRecycle, faSdCard, faSearch, faShareNodes, faTrashCan
+    faGear, faPen, faRecycle, faSdCard, faSearch, faShareNodes, faTrashCan, faXmark
 } from "@fortawesome/free-solid-svg-icons";
 import {moderateScale} from "../utils/metrics";
 import {faMinusSquare, faPenToSquare} from "@fortawesome/free-regular-svg-icons";
@@ -78,6 +78,7 @@ export const commonIcons = {
     trash: faTrashCan,
     confirmCircle: faCheckCircle,
     crossCircle: faCircleXmark,
+    cross: faXmark,
     optionsDown: faCaretDown,
     optionsUp: faCaretUp,
     info: faCircleExclamation

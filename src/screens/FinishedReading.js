@@ -1,7 +1,7 @@
 import BookList from "../components/BookList";
 import useHeaderSearch from "../hooks/useHeaderSearch";
 import {withObservables} from "@nozbe/watermelondb/react";
-import {BookDAO} from "../database";
+import BookDAO from "../database/DAO/BookDAO";
 
 
 const FinishedReading = ({navigation, books}) => {
