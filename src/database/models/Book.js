@@ -18,6 +18,7 @@ export default class Book extends Model {
     @field("progress") progress
     @field("total_pages") totalPages
     @field("page") page
+    @field("cfi_location") cfiLocation
     @field("time_spent") timeSpent
     @field("is_finished") isFinished
     @relation("folders", "folder_id") folder
@@ -31,6 +32,14 @@ export default class Book extends Model {
     async toggleIsFinished() {
         await this.update(book => {
             book.isFinished = !book.isFinished;
+        })
+    }
+
+    @writer
+    async changeCurrentPage(page, cfiLocation) {
+        await this.update(book => {
+            book.page = page;
+            book.cfiLocation = cfiLocation;
         })
     }
 

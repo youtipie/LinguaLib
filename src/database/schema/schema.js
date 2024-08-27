@@ -23,6 +23,7 @@ export default appSchema({
                 {name: "progress", type: "number"},
                 {name: "total_pages", type: "number"},
                 {name: "page", type: "number"},
+                {name: "cfi_location", type: "string"},
                 {name: "time_spent", type: "number"},
                 {name: "is_finished", type: "boolean"},
                 {name: "folder_id", type: "string", isIndexed: true},
