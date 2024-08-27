@@ -13,6 +13,7 @@ import {colors} from "../../constants/styles";
 import Header from "./components/Header";
 import ProgressBar from "./components/ProgressBar";
 import {horizontalScale, verticalScale} from "../../utils/metrics";
+import Footer from "./components/Footer";
 
 
 // TODO: Save locations array and/or sectionsPercentages to db for faster loading
@@ -273,6 +274,10 @@ const ReadBook = ({book}) => {
                 setIsSectionsLoading(false);
                 break;
             }
+            case "changeLocationCfi": {
+                goToLocation(message.result);
+                break;
+            }
             case "getElements": {
                 translate(message.result).then(() => {
                 });
@@ -292,6 +297,12 @@ const ReadBook = ({book}) => {
     useEffect(() => {
         !src && getSrc(book.uri);
     }, []);
+
+    const progressBar = <ProgressBar
+        containerStyle={{...(!isOptionsVisible && styles.progressBarWrapper), ...styles.progressBarContainer}}
+        sectionsPercentages={sectionsPercentages}
+        isDisabled={!isOptionsVisible}
+    />;
 
     return (
         <View style={{flex: 1, backgroundColor: colors.primary200}}>
@@ -324,12 +335,11 @@ const ReadBook = ({book}) => {
                         injectedJavascript={js}
                         waitForLocationsReady
                     />
-                    <View style={styles.progressBarWrapper}>
-                        <ProgressBar
-                            containerStyle={styles.progressBarContainer}
-                            sectionsPercentages={sectionsPercentages}
-                        />
-                    </View>
+                    {isOptionsVisible ?
+                        <Footer progressbarComponent={progressBar}/>
+                        :
+                        progressBar
+                    }
                 </>
             }
         </View>

@@ -1,21 +1,45 @@
 import {View, StyleSheet} from "react-native";
 import {colors} from "../../../constants/styles";
 import {useReader} from "@epubjs-react-native/core";
+import {useDebounceCallback} from "usehooks-ts";
+import {Slider} from "@miblanchard/react-native-slider";
 
-const ProgressBar = ({containerStyle, sectionsPercentages}) => {
-    const {currentLocation, theme} = useReader();
+const ProgressBar = ({containerStyle, sectionsPercentages, isDisabled = true}) => {
+    const {currentLocation, theme, totalLocations, injectJavascript} = useReader();
 
     const currentPercentage = (currentLocation?.start.percentage || 0);
-    const currentPercentageString = (currentPercentage * 100).toFixed(0);
+
+    const debounced = useDebounceCallback((percentage) => {
+        injectJavascript(`
+      try {
+        const cfi = book.locations.cfiFromPercentage(${percentage});
+        window.ReactNativeWebView.postMessage(JSON.stringify({ type: "changeLocationCfi", result: cfi }));
+      } catch (error) {
+        error("Encountered some error while changing pages with slider: " + error);
+      }
+    `);
+    }, 500);
+
+    const trackStyle = {...styles.trackStyle, ...(!isDisabled && {height: 3})};
+    const sectionMarkStyle = {
+        ...styles.sectionMark, ...(!isDisabled && {
+            width: 2,
+            height: 8,
+            transform: [{translateY: -4}]
+        })
+    };
 
     return (
-        <View style={[{...styles.wrapper, backgroundColor: theme.body.background}, containerStyle]}>
+        <View style={[{
+            ...styles.wrapper,
+            backgroundColor: isDisabled ? theme.body.background : "transparent"
+        }, containerStyle]}>
             <View style={styles.containerOuter}>
                 {sectionsPercentages.map((percentage, index) =>
                     <View
                         key={index}
                         style={
-                            [styles.sectionMark,
+                            [sectionMarkStyle,
                                 {
                                     left: (percentage * 100).toFixed(0) + "%",
                                     backgroundColor: percentage > currentPercentage ? colors.textAccent100 + "50" : colors.textAccent100
@@ -23,10 +47,20 @@ const ProgressBar = ({containerStyle, sectionsPercentages}) => {
                             ]
                         }></View>
                 )}
-                <View
-                    style={{...styles.containerInner, width: currentPercentageString + "%"}}
-                >
-                </View>
+                <Slider
+                    containerStyle={{marginVertical: -15}}
+                    trackStyle={trackStyle}
+                    thumbStyle={{...{width: 10, height: 10}, ...(isDisabled && {width: 0, height: 0})}}
+                    minimumValue={0}
+                    maximumValue={1}
+                    minimumTrackTintColor={colors.textAccent100}
+                    maximumTrackTintColor={colors.textAccent100 + "50"}
+                    thumbTintColor={colors.textAccent100}
+                    step={1 / totalLocations}
+                    value={currentPercentage}
+                    disabled={isDisabled}
+                    onValueChange={(percentage) => debounced(percentage[0])}
+                />
             </View>
         </View>
     );
@@ -42,13 +76,9 @@ const styles = StyleSheet.create({
     },
     containerOuter: {
         width: "100%",
-        height: 2,
-        backgroundColor: colors.textAccent100 + "50",
     },
-    containerInner: {
-        height: "100%",
-        backgroundColor: colors.textAccent100,
-        overflow: "hidden",
+    trackStyle: {
+        height: 2
     },
     sectionMark: {
         position: "absolute",
