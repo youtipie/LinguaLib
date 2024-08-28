@@ -4,6 +4,7 @@ import {useReader} from "@epubjs-react-native/core";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {horizontalScale, moderateScale, verticalScale} from "../../../utils/metrics";
 import {useNavigation} from "@react-navigation/native";
+import ReadingOptionsMenu from "./ReadingOptionsMenu";
 
 const Header = ({bookTitle}) => {
     const {section, currentLocation} = useReader();
@@ -23,9 +24,7 @@ const Header = ({bookTitle}) => {
                 <TouchableOpacity onPress={handleGoBack}>
                     <FontAwesomeIcon icon={drawerIcons.goBack} size={moderateScale(24)} color={colors.textPrimary200}/>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleOpenOptions}>
-                    <FontAwesomeIcon icon={commonIcons.options} size={moderateScale(24)} color={colors.textPrimary200}/>
-                </TouchableOpacity>
+                <ReadingOptionsMenu/>
             </View>
             <View style={styles.lowerContainer}>
                 <Text style={styles.title}>{bookTitle}</Text>

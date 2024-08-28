@@ -220,7 +220,7 @@ const ReadBook = ({book}) => {
             "p": {
                 "color": "#5D4037 !important",
                 "text-indent": "10% !important",
-                "line-height": "1.2 !important"
+                "line-height": "1.2 !important",
             }
         })
         changeFontSize('20px')

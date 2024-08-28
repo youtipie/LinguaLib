@@ -51,8 +51,7 @@ const DetailsMenu = ({bookId, book, enterEditMode}) => {
                     color={colors.textPrimary100}
                 />
             }
-            options={options}
-            menuItem={(option, index) => (
+            options={options.map((option, index) => (
                 <MenuItem
                     key={index}
                     icon={option.icon}
@@ -61,7 +60,7 @@ const DetailsMenu = ({bookId, book, enterEditMode}) => {
                     label={option.label}
                     onSelect={option.action}
                 />
-            )}
+            ))}
             optionsContainerStyle={{backgroundColor: colors.primary100}}
         />
     );

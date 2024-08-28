@@ -36,8 +36,7 @@ const LanguageSelectMenu = ({defaultValue, onSelect}) => {
                     </View>
                 </DetailsItem>
             }
-            options={languageIconList}
-            menuItem={(option, index) => (
+            options={languageIconList.map((option, index) => (
                 <MenuItem
                     key={index}
                     label={option.language}
@@ -45,9 +44,8 @@ const LanguageSelectMenu = ({defaultValue, onSelect}) => {
                     customIcon={<Text>{option.icon}</Text>}
                     disabled={option.lang === selectedValue}
                 />
-            )}
+            ))}
             optionsContainerStyle={{backgroundColor: colors.primary100, height: verticalScale(600)}}
-
         />
     );
 };

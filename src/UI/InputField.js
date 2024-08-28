@@ -4,11 +4,13 @@ import {moderateScale} from "../utils/metrics";
 
 const InputField = ({
                         placeholder,
+                        value,
                         defaultValue,
                         onChangeText,
                         maxLength,
                         inputStyles,
                         wrapperStyles,
+                        keyboardType = "default",
                         multiline = false,
                         autoFocus = false
                     }) => {
@@ -17,6 +19,7 @@ const InputField = ({
             <TextInput
                 style={[styles.input, inputStyles]}
                 placeholder={placeholder}
+                value={value}
                 defaultValue={defaultValue}
                 onChangeText={onChangeText}
                 maxLength={maxLength}
@@ -25,6 +28,7 @@ const InputField = ({
                 placeholderTextColor={colors.primary300}
                 autoFocus={autoFocus}
                 multiline={multiline}
+                keyboardType={keyboardType}
             />
         </View>
     );

@@ -2,11 +2,28 @@ import {
     faArrowLeft,
     faBars,
     faBookOpen,
-    faBookOpenReader, faCaretDown, faCaretUp,
-    faCheck, faCheckCircle, faCircleExclamation, faCirclePlus, faCircleXmark, faEllipsis, faEllipsisVertical,
+    faBookOpenReader,
+    faCaretDown,
+    faCaretUp,
+    faCheck,
+    faCheckCircle,
+    faCircleExclamation,
+    faCircleMinus,
+    faCirclePlus,
+    faCircleXmark,
+    faEllipsis,
+    faEllipsisVertical,
     faExclamation,
     faFolder,
-    faGear, faPen, faRecycle, faSdCard, faSearch, faShareNodes, faSliders, faTrashCan, faXmark
+    faGear,
+    faPen,
+    faRecycle,
+    faSdCard,
+    faSearch,
+    faShareNodes,
+    faSliders,
+    faTrashCan,
+    faXmark
 } from "@fortawesome/free-solid-svg-icons";
 import {moderateScale} from "../utils/metrics";
 import {faMinusSquare, faPenToSquare} from "@fortawesome/free-regular-svg-icons";
@@ -67,6 +84,7 @@ export const folderIcons = {
 
 export const commonIcons = {
     addCircle: faCirclePlus,
+    minusCircle: faCircleMinus,
     minusSquare: faMinusSquare,
     editSquare: faPenToSquare,
     dotsHorizontal: faEllipsis,
@@ -89,6 +107,11 @@ export const commonStyles = {
     detailText: {
         fontFamily: fonts.primaryRegular,
         fontSize: moderateScale(16),
+        color: colors.textPrimary200,
+    },
+    readingOptionText: {
+        fontFamily: fonts.primaryRegular,
+        fontSize: moderateScale(18),
         color: colors.textPrimary200,
     }
 }

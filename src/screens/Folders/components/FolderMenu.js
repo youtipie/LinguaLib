@@ -19,8 +19,7 @@ const FolderMenu = ({onEdit, onDelete}) => {
                     color={colors.textPrimary200}
                 />
             }
-            options={options}
-            menuItem={(option, index) => (
+            options={options.map((option, index) => (
                 <MenuItem
                     key={index}
                     icon={option.icon}
@@ -29,7 +28,7 @@ const FolderMenu = ({onEdit, onDelete}) => {
                     label={option.label}
                     onSelect={option.action}
                 />
-            )}
+            ))}
             optionsContainerStyle={{
                 backgroundColor: colors.menu100,
                 borderRadius: moderateScale(5),
