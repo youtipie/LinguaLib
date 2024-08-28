@@ -3,9 +3,9 @@ import {Slider} from "@miblanchard/react-native-slider";
 import {colors} from "../../../constants/styles";
 import {useDebounceCallback} from "usehooks-ts";
 
-const ReadingOptionSlider = ({defaultValue, onChangeValue, min, max, step}) => {
+const ReadingOptionSlider = ({defaultValue, onValueChange, min, max, step}) => {
     const debounced = useDebounceCallback((percentage) => {
-        onChangeValue(percentage);
+        onValueChange(percentage[0]);
     });
 
     return (

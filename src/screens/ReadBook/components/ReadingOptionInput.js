@@ -16,13 +16,14 @@ const ReadingOptionInput = ({defaultValue, incrementValue, onValueChange}) => {
         }
 
         setValue(sanitizedValue);
-        onValueChange(parseInt(value));
+        onValueChange(parseInt(sanitizedValue));
     }
 
     function handleIconsPress(incrementValue) {
         const intValue = parseInt(value);
         const newValue = Math.max(intValue + incrementValue, 1);
         setValue(newValue.toString());
+        onValueChange(newValue)
     }
 
     return (

@@ -7,10 +7,10 @@ import Section from "./compontens/Section";
 import SectionItemWithSwitch from "./compontens/SectionItemWithSwitch";
 import SectionItem from "./compontens/SectionItem";
 import {useDispatch, useSelector} from "react-redux";
-import {selectAllSettings, settingsFields, updateSetting} from "../../store/reducers/settings";
+import {selectAllAppSettings, appSettingsFields, updateAppSetting} from "../../store/reducers/settings";
 
 const Settings = ({navigation}) => {
-    const settings = useSelector(selectAllSettings);
+    const settings = useSelector(selectAllAppSettings);
     const dispatch = useDispatch();
 
     const visitSupportPage = useCallback(async () => {
@@ -24,7 +24,7 @@ const Settings = ({navigation}) => {
     }, [buyMeACoffeeUrl]);
 
     function handleOnChange(fieldName) {
-        return (value) => dispatch(updateSetting({value, name: fieldName}));
+        return (value) => dispatch(updateAppSetting({value, name: fieldName}));
     }
 
     return (
@@ -34,7 +34,7 @@ const Settings = ({navigation}) => {
                     defaultValue={settings.openBookOnStartUp}
                     text="Open book on start up"
                     subtext="Continue reading the book when the app starts"
-                    onChange={handleOnChange(settingsFields.openBookOnStartUp)}
+                    onChange={handleOnChange(appSettingsFields.openBookOnStartUp)}
                 />
             </Section>
 
@@ -43,25 +43,25 @@ const Settings = ({navigation}) => {
                     defaultValue={settings.fullScreenMode}
                     text="Full screen mode"
                     subtext="Hide navigation panel and status bar"
-                    onChange={handleOnChange(settingsFields.fullScreenMode)}
+                    onChange={handleOnChange(appSettingsFields.fullScreenMode)}
                 />
                 <SectionItemWithSwitch
                     defaultValue={settings.screenShutdownDelay}
                     text="Screen shutdown delay"
                     subtext="Leave the screen on for a longer period than the average use of a phone"
-                    onChange={handleOnChange(settingsFields.screenShutdownDelay)}
+                    onChange={handleOnChange(appSettingsFields.screenShutdownDelay)}
                 />
                 <SectionItemWithSwitch
                     defaultValue={settings.animations}
                     text="Animations"
                     subtext="Show the animations when changing pages"
-                    onChange={handleOnChange(settingsFields.animations)}
+                    onChange={handleOnChange(appSettingsFields.animations)}
                 />
                 <SectionItemWithSwitch
                     defaultValue={settings.volumeButtons}
                     text="Volume buttons"
                     subtext="Use the volume buttons to turn pages. Volume down - previous page, volume up - next page"
-                    onChange={handleOnChange(settingsFields.volumeButtons)}
+                    onChange={handleOnChange(appSettingsFields.volumeButtons)}
                 />
             </Section>
 
@@ -72,7 +72,7 @@ const Settings = ({navigation}) => {
                         description: "Select the translation engine to use for translating text in your books. More engines may be added in the future.",
                         labels: ["Google Translate", "LinguaLib server"],
                         defaultValue: settings.translatingEngine,
-                        fieldName: settingsFields.translatingEngine
+                        fieldName: appSettingsFields.translatingEngine
                     })}
                     text="Translating engine"
                     subtext={`Chosen: ${settings.translatingEngine}`}
@@ -83,7 +83,7 @@ const Settings = ({navigation}) => {
                         description: "Select the language into which your books will be translated. Please note that this list may differ from one translation engine to another.",
                         labels: ["Ukrainian", "English"],
                         defaultValue: settings.targetLanguage,
-                        fieldName: settingsFields.targetLanguage
+                        fieldName: appSettingsFields.targetLanguage
                     })}
                     text="Target language"
                     subtext={`Chosen: ${settings.targetLanguage}`}
@@ -92,7 +92,7 @@ const Settings = ({navigation}) => {
                     defaultValue={settings.backup}
                     text="Backup"
                     subtext="By default, the original text in your books is replaced by the translated text. Turn this option on to make a backup copy of the original book."
-                    onChange={handleOnChange(settingsFields.backup)}
+                    onChange={handleOnChange(appSettingsFields.backup)}
                 />
             </Section>
 
@@ -103,7 +103,7 @@ const Settings = ({navigation}) => {
                         description: "Select the interface language. Please note that this option is not relevant for the translation language. To change the translation language, go to Settings, Translation section",
                         labels: ["English", "Ukrainian"],
                         defaultValue: settings.language,
-                        fieldName: settingsFields.language
+                        fieldName: appSettingsFields.language
                     })}
                     text="Target language"
                     subtext={`Chosen: ${settings.language}`}

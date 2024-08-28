@@ -4,7 +4,7 @@ import {moderateScale, verticalScale} from "../../utils/metrics";
 import {useLayoutEffect} from "react";
 import RadioButtonGroup from "../../UI/RadioButtonGroup";
 import {useDispatch} from "react-redux";
-import {updateSetting} from "../../store/reducers/settings";
+import {updateAppSetting} from "../../store/reducers/settings";
 
 const SelectSettings = ({navigation, route}) => {
     const {title, description, labels, defaultValue, fieldName} = route.params;
@@ -17,7 +17,7 @@ const SelectSettings = ({navigation, route}) => {
     }, [navigation]);
 
     function onValueChanged(value) {
-        dispatch(updateSetting({value, name: fieldName}))
+        dispatch(updateAppSetting({value, name: fieldName}))
     }
 
     return (

@@ -1,5 +1,5 @@
 import {View, StyleSheet, Text, TouchableOpacity} from "react-native";
-import {colors, commonIcons, drawerIcons, fonts} from "../../../constants/styles";
+import {colors, drawerIcons, fonts} from "../../../constants/styles";
 import {useReader} from "@epubjs-react-native/core";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {horizontalScale, moderateScale, verticalScale} from "../../../utils/metrics";
@@ -12,10 +12,6 @@ const Header = ({bookTitle}) => {
 
     function handleGoBack() {
         navigation.goBack();
-    }
-
-    function handleOpenOptions() {
-
     }
 
     return (

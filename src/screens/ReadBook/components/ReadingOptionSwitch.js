@@ -2,12 +2,12 @@ import {View, StyleSheet, Text} from "react-native";
 import SwitchButton from "../../../UI/SwitchButton";
 import {commonStyles} from "../../../constants/styles";
 
-const ReadingOptionSwitch = ({defaultValue, onChangeValue}) => {
+const ReadingOptionSwitch = ({defaultValue, onValueChange}) => {
 
     return (
         <View style={styles.container}>
             <Text style={commonStyles.readingOptionText}>Enabled</Text>
-            <SwitchButton defaultValue={defaultValue} onChange={onChangeValue}/>
+            <SwitchButton defaultValue={defaultValue} onChange={onValueChange}/>
         </View>
     );
 };
