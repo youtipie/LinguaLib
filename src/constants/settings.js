@@ -9,7 +9,6 @@ export const fontOptions = {
     roboto: "Roboto",
     arial: "Arial",
     merriweather: "Merriweather",
-    atypDisplay: "atyp Display"
 }
 
 export const textAlignmentOptions = {

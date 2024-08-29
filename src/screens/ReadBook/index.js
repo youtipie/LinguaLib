@@ -14,11 +14,14 @@ import Header from "./components/Header";
 import ProgressBar from "./components/ProgressBar";
 import {horizontalScale, verticalScale} from "../../utils/metrics";
 import Footer from "./components/Footer";
+import {fontOptions} from "../../constants/settings";
+import useBookSettings from "../../hooks/useBookSettings";
 
 
 // TODO: Save locations array and/or sectionsPercentages to db for faster loading
 const ReadBook = ({book}) => {
     const [src, setSrc] = useState('');
+    const {applyReadingSettings} = useBookSettings(() => console.log("Change styling"));
     const [isLoaded, setIsLoaded] = useState(false);
     const [isOptionsVisible, setIsOptionsVisible] = useState(false);
     const [isSectionsLoading, setIsSectionsLoading] = useState(false);
@@ -214,25 +217,15 @@ const ReadBook = ({book}) => {
     }
 
     function handleReady() {
-        changeTheme({
-            ...theme,
-            "body": {"background": "#F4ECD8"},
-            "p": {
-                "color": "#5D4037 !important",
-                "text-indent": "10% !important",
-                "line-height": "1.2 !important",
-            }
-        })
-        changeFontSize('20px')
         injectJavascript(`
             WebFont.load({
               google: {
-                families: ['Merriweather']
+                families: ['Merriweather', 'Roboto', 'Sevillana']
               },
               context: window.frames[0],
             });
         `)
-        changeFontFamily("Merriweather")
+        applyReadingSettings();
     }
 
     async function handleOnLocationChange(totalLocations, currentLocation, progress, currentSection) {
