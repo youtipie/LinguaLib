@@ -5,14 +5,21 @@ import {horizontalScale, verticalScale} from "../../../utils/metrics";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 
 const ReadingOptionSelect = ({options, defaultValue, onValueChange}) => {
+    const getDisplayValue = (item) => {
+        return typeof item === "object" && item !== null ? item.displayName : item;
+    };
 
     return (
         <SelectDropdown
             data={options}
-            onSelect={onValueChange}
+            onSelect={(selectedItem) => {
+                onValueChange(selectedItem);
+            }}
             renderButton={(selectedItem, isOpen) => (
                 <View style={styles.triggerContainer}>
-                    <Text style={commonStyles.readingOptionText}>{selectedItem}</Text>
+                    <Text style={commonStyles.readingOptionText}>
+                        {getDisplayValue(selectedItem)}
+                    </Text>
                     <FontAwesomeIcon
                         icon={commonIcons.optionsDown}
                         size={commonStyles.readingOptionText.fontSize}
@@ -22,7 +29,9 @@ const ReadingOptionSelect = ({options, defaultValue, onValueChange}) => {
             )}
             renderItem={(item, index, isSelected) => (
                 <View style={styles.item}>
-                    <Text style={[commonStyles.readingOptionText, isSelected && styles.selected]}>{item}</Text>
+                    <Text style={[commonStyles.readingOptionText, isSelected && styles.selected]}>
+                        {getDisplayValue(item)}
+                    </Text>
                 </View>
             )}
             dropdownStyle={styles.dropdownContainer}
@@ -40,7 +49,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: horizontalScale(10),
         paddingVertical: verticalScale(5),
         shadowColor: "black",
-        shadowOffset: {width: 0, height: 2,},
+        shadowOffset: {width: 0, height: 2},
         shadowOpacity: 0.25,
         shadowRadius: 3.5,
         elevation: 5,
@@ -54,9 +63,9 @@ const styles = StyleSheet.create({
     item: {
         marginVertical: verticalScale(2),
         flexDirection: "row",
-        alignItems: "center"
+        alignItems: "center",
     },
     selected: {
         color: colors.success200,
-    }
+    },
 });

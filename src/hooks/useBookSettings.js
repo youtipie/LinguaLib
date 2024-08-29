@@ -7,14 +7,21 @@ import ReadingThemes from "../constants/readingThemes";
 
 const UseBookSettings = (callback) => {
     const settings = useSelector(selectAllReadingSettings);
-    const {changeFontFamily, changeFontSize, changeTheme, injectJavascript} = useReader();
+    const {changeFontSize, changeTheme, injectJavascript} = useReader();
 
     function applyReadingSettings() {
+        injectJavascript(`
+            WebFont.load({
+              google: {
+                families: ['${settings.font.displayName}']
+              },
+              context: window.frames[0],
+            });
+        `)
         changeTheme(
-            ReadingThemes[settings.colorScheme](settings.textIndent, settings.lineSpacing, settings.fontBoldness, settings.textAlignment, settings.lineBreaks, settings.font)
+            ReadingThemes[settings.colorScheme](settings.textIndent, settings.lineSpacing, settings.fontBoldness, settings.textAlignment, settings.lineBreaks, settings.font.cssValue)
         );
         changeFontSize(`${settings.fontSize}px`)
-        // changeFontFamily(settings.font)
 
         callback && callback();
     }

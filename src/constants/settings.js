@@ -4,11 +4,20 @@ export const colorSchemeOptions = {
     sepia: "Sepia"
 }
 
-// Subject to change
+// TODO: Make this variable managed by state. And add ability to add new fonts via some sort of modal
 export const fontOptions = {
-    roboto: "Roboto",
-    arial: "Arial",
-    merriweather: "Merriweather",
+    arial: {
+        displayName: "Arial",
+        cssValue: "'Arial', sans-serif"
+    },
+    roboto: {
+        displayName: "Roboto",
+        cssValue: "'Roboto', sans-serif"
+    },
+    merriweather: {
+        displayName: "Merriweather",
+        cssValue: "'Merriweather', serif"
+    },
 }
 
 export const textAlignmentOptions = {

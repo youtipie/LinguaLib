@@ -14,7 +14,6 @@ import Header from "./components/Header";
 import ProgressBar from "./components/ProgressBar";
 import {horizontalScale, verticalScale} from "../../utils/metrics";
 import Footer from "./components/Footer";
-import {fontOptions} from "../../constants/settings";
 import useBookSettings from "../../hooks/useBookSettings";
 
 
@@ -138,12 +137,12 @@ const ReadBook = ({book}) => {
         window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'getSectionsPercentages', result: sectionsPercentages }));
     }
     
-    function init(){
+    function loadWebFont(){
         let script = document.createElement('script');
         script.src = "https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js";
         document.head.appendChild(script);
     }
-    init();
+    loadWebFont();
     `
 
     async function translate(textElementsArray) {
@@ -217,14 +216,6 @@ const ReadBook = ({book}) => {
     }
 
     function handleReady() {
-        injectJavascript(`
-            WebFont.load({
-              google: {
-                families: ['Merriweather', 'Roboto', 'Sevillana']
-              },
-              context: window.frames[0],
-            });
-        `)
         applyReadingSettings();
     }
 
