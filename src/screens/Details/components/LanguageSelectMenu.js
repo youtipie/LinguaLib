@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {Text, View} from "react-native";
+import {FlatList, Text, View} from "react-native";
 import {renderers,} from "react-native-popup-menu";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import MenuWrapper from "../../../components/Menu/MenuWrapper";
@@ -19,6 +19,15 @@ const LanguageSelectMenu = ({defaultValue, onSelect}) => {
         onSelect(option.language);
     }
 
+    const options = <FlatList data={languageIconList} keyExtractor={(item, index) => index} renderItem={
+        (optionData) => <MenuItem
+            label={optionData.item.language}
+            onSelect={() => handleSelectOption(optionData.item)}
+            customIcon={<Text>{optionData.item.icon}</Text>}
+            disabled={optionData.item.lang === selectedValue}
+        />
+    }/>
+
     return (
         <MenuWrapper
             renderer={renderers.SlideInMenu}
@@ -36,15 +45,7 @@ const LanguageSelectMenu = ({defaultValue, onSelect}) => {
                     </View>
                 </DetailsItem>
             }
-            options={languageIconList.map((option, index) => (
-                <MenuItem
-                    key={index}
-                    label={option.language}
-                    onSelect={() => handleSelectOption(option)}
-                    customIcon={<Text>{option.icon}</Text>}
-                    disabled={option.lang === selectedValue}
-                />
-            ))}
+            options={options}
             optionsContainerStyle={{backgroundColor: colors.primary100, height: verticalScale(600)}}
         />
     );

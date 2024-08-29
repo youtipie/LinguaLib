@@ -10,7 +10,7 @@ export const languageIconList = languageData.reduce((results, country) => {
         results.push({language: lang, icon: country.emoji});
     }
     return results;
-}, []);
+}, []).sort((a, b) => a.language.localeCompare(b.language));
 
 export const getLanguageByCode = (code) => {
     const langCode = code.split("-")[0];

@@ -14,9 +14,7 @@ const MenuWrapper = ({trigger, options, toggleIsOpen = null, optionsContainerSty
                 {trigger}
             </MenuTrigger>
             <MenuOptions optionsContainerStyle={[styles.menuOptions, optionsContainerStyle]}>
-                <ScrollView>
-                    {options}
-                </ScrollView>
+                {options}
             </MenuOptions>
         </Menu>
     );
