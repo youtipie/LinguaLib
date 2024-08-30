@@ -103,10 +103,12 @@ const Details = ({book, folder}) => {
                         title="Time spent reading"
                         content={minutesToTimeString(book.timeSpent)}
                     />
-                    <DetailsItem
-                        title="Reading progress"
-                        content={`${book.page} of ${book.totalPages} pages`}
-                    />
+                    {book.totalPages > 0 &&
+                        <DetailsItem
+                            title="Reading progress"
+                            content={`${book.page} of ${book.totalPages} pages`}
+                        />
+                    }
 
                     <DetailsItem title="Book location">
                         <View style={styles.folderDetails}>

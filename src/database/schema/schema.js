@@ -26,6 +26,8 @@ export default appSchema({
                 {name: "cfi_location", type: "string"},
                 {name: "time_spent", type: "number"},
                 {name: "is_finished", type: "boolean"},
+                {name: "initial_locations", type: "string"},
+                {name: "sections_percentages", type: "string"},
                 {name: "folder_id", type: "string", isIndexed: true},
                 {name: "last_interaction_at", type: "number"}
             ]

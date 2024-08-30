@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Reader, Themes, useReader} from "@epubjs-react-native/core";
 import {StyleSheet, View} from "react-native";
 import {withObservables} from "@nozbe/watermelondb/react";
@@ -17,7 +17,6 @@ import Footer from "./components/Footer";
 import useBookSettings from "../../hooks/useBookSettings";
 
 
-// TODO: Save locations array and/or sectionsPercentages to db for faster loading
 const ReadBook = ({book}) => {
     const [src, setSrc] = useState('');
     const {applyReadingSettings} = useBookSettings(() => console.log("Change styling"));
@@ -25,7 +24,8 @@ const ReadBook = ({book}) => {
     const [isOptionsVisible, setIsOptionsVisible] = useState(false);
     const [isSectionsLoading, setIsSectionsLoading] = useState(false);
 
-    const [sectionsPercentages, setSectionsPercentages] = useState([]);
+    // We don't want to rerender book when this changes
+    const initialLocationsRef = useRef(book.initialLocations);
 
     const {showModal} = useModal();
     const {
@@ -40,7 +40,8 @@ const ReadBook = ({book}) => {
         goPrevious,
         toc,
         section,
-        getCurrentLocation
+        getCurrentLocation,
+        locations
     } = useReader();
 
     const js = `
@@ -224,6 +225,11 @@ const ReadBook = ({book}) => {
         // Most of the time it is kinda correct, but sometimes there is two pages with same number.
 
         if (totalLocations !== 0 && !isLoaded && !isSectionsLoading) {
+            if (initialLocationsRef.current.length && book.sectionsPercentages.length) {
+                finishLoading();
+                return;
+            }
+
             const sectionsHrefs = toc.reduce((result, section) => {
                 result.push(section.href);
                 for (let childSection of section.subitems) {
@@ -238,24 +244,29 @@ const ReadBook = ({book}) => {
         }
 
         if (currentLocation.start.location !== 0 && isLoaded && !isSectionsLoading) {
-            await book.changeCurrentPage(currentLocation.start.location, currentLocation.start.cfi);
+            await book.changeCurrentPage(currentLocation.start.location, currentLocation.start.percentage, currentLocation.start.cfi);
         }
     }
 
-    function handleMessage(message) {
+    function finishLoading() {
+        // For some reason, onLocationReady doesn't really go to expected location (Especially if location in near end of section).
+        // So to make sure, we go to that location again.
+        if (book.cfiLocation) {
+            goToLocation(book.cfiLocation);
+        } else {
+            goToLocation("0")
+        }
+        setIsLoaded(true);
+        setIsSectionsLoading(false);
+    }
+
+    async function handleMessage(message) {
         const {type} = message;
         switch (type) {
             case "getSectionsPercentages": {
-                // For some reason, onLocationReady doesn't really go to expected location (Especially if location in near end of section).
-                // So to make sure, we go to that location again.
-                setSectionsPercentages(message.result);
-                if (book.cfiLocation) {
-                    goToLocation(book.cfiLocation);
-                } else {
-                    goToLocation("0")
-                }
-                setIsLoaded(true);
-                setIsSectionsLoading(false);
+                finishLoading();
+                await book.changeInitialLocations(locations);
+                await book.changeSectionsPercentages(message.result);
                 break;
             }
             case "changeLocationCfi": {
@@ -284,7 +295,7 @@ const ReadBook = ({book}) => {
 
     const progressBar = <ProgressBar
         containerStyle={{...(!isOptionsVisible && styles.progressBarWrapper), ...styles.progressBarContainer}}
-        sectionsPercentages={sectionsPercentages}
+        sectionsPercentages={book.sectionsPercentages}
         isDisabled={!isOptionsVisible}
     />;
 
@@ -303,6 +314,7 @@ const ReadBook = ({book}) => {
                 <>
                     <Reader
                         src={src}
+                        initialLocations={initialLocationsRef.current.length ? initialLocationsRef.current : null}
                         fileSystem={useFileSystem}
                         onReady={handleReady}
                         onWebViewMessage={(message) => handleMessage(message)}
@@ -317,7 +329,7 @@ const ReadBook = ({book}) => {
                         }}
                         onSingleTap={() => setIsOptionsVisible(!isOptionsVisible)}
                         injectedJavascript={js}
-                        waitForLocationsReady
+                        waitForLocationsReady={!initialLocationsRef.current.length}
                     />
                     {isOptionsVisible ?
                         <Footer progressbarComponent={progressBar}/>

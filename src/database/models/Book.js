@@ -1,7 +1,11 @@
 import {Model} from '@nozbe/watermelondb'
-import {date, field, relation, text, writer} from "@nozbe/watermelondb/decorators";
+import {date, field, json, relation, text, writer} from "@nozbe/watermelondb/decorators";
 import {StorageAccessFramework} from "expo-file-system"
 import getFilename from "../../utils/getFilename";
+
+const sanitizeSections = rawSections => {
+    return Array.isArray(rawSections) ? rawSections.map(Number) : []
+}
 
 export default class Book extends Model {
     static table = "books"
@@ -21,6 +25,8 @@ export default class Book extends Model {
     @field("cfi_location") cfiLocation
     @field("time_spent") timeSpent
     @field("is_finished") isFinished
+    @json("initial_locations", json => json) initialLocations
+    @json("sections_percentages", sanitizeSections) sectionsPercentages
     @relation("folders", "folder_id") folder
     @date("last_interaction_at") lastInteractionAt
 
@@ -36,10 +42,25 @@ export default class Book extends Model {
     }
 
     @writer
-    async changeCurrentPage(page, cfiLocation) {
+    async changeCurrentPage(page, progress, cfiLocation) {
         await this.update(book => {
             book.page = page;
             book.cfiLocation = cfiLocation;
+            book.progress = progress;
+        })
+    }
+
+    @writer
+    async changeInitialLocations(locations) {
+        await this.update(book => {
+            book.initialLocations = locations;
+        })
+    }
+
+    @writer
+    async changeSectionsPercentages(percentages) {
+        await this.update(book => {
+            book.sectionsPercentages = percentages;
         })
     }
 

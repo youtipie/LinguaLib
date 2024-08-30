@@ -33,9 +33,11 @@ export default {
                     book.description = escapeTags(bookData.description);
                     book.language = getLanguageByCode(bookData.language);
                     book.progress = 0;
-                    book.totalPages = bookData.totalPages;
+                    book.totalPages = 0;
                     book.page = 0;
                     book.timeSpent = 0;
+                    book.initialLocations = [];
+                    book.sectionsPercentages = [];
                     book.isFinished = false;
                     book.folder.set(folder);
                 })

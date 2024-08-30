@@ -1,11 +1,10 @@
-import {createContext, useEffect, useState} from "react";
+import {createContext, useState} from "react";
 import {View} from "react-native";
 import {Reader, useReader} from "@epubjs-react-native/core";
 import {useFileSystem} from "@epubjs-react-native/expo-file-system";
 import tempCopyToCache from "../utils/tempCopyToCache";
 import LoadingSpinner from "../UI/LoadingSpinner";
 import getFilename from "../utils/getFilename";
-import {delay} from "@reduxjs/toolkit/src/utils";
 
 export const MetadataContext = createContext([]);
 
@@ -71,9 +70,8 @@ const MetadataProvider = ({children}) => {
     );
 };
 
-// Extraction is very long, due to having to wait for locations.
 const MetadataHelper = ({src, onReady}) => {
-    const {getMeta, goNext} = useReader();
+    const {getMeta} = useReader();
 
     return (
         <View style={{position: "absolute", opacity: 0}}>
@@ -82,18 +80,8 @@ const MetadataHelper = ({src, onReady}) => {
                 src={src}
                 height={1}
                 width={1}
-                onLocationsReady={(e, locations) => {
-                    // Triggering onLocationChange, because we cannot get totalLocations from onLocationReady
-                    // (It is always 0)
-                    goNext()
-                }}
-                onLocationChange={(totalLocations, current, progress) => {
-                    if (totalLocations) {
-                        onReady({...getMeta(), totalPages: totalLocations});
-                    }
-                }}
+                onReady={() => onReady(getMeta())}
                 fileSystem={useFileSystem}
-                waitForLocationsReady
             />
         </View>
     );
