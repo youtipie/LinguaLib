@@ -5,7 +5,7 @@ import {selectAllReadingSettings} from "../store/reducers/settings";
 import ReadingThemes from "../constants/readingThemes";
 
 
-const UseBookSettings = (callback) => {
+const UseBookSettings = () => {
     const settings = useSelector(selectAllReadingSettings);
     const {changeFontSize, changeTheme, injectJavascript} = useReader();
 
@@ -22,8 +22,6 @@ const UseBookSettings = (callback) => {
             ReadingThemes[settings.colorScheme](settings.textIndent, settings.lineSpacing, settings.fontBoldness, settings.textAlignment, settings.lineBreaks, settings.font.cssValue)
         );
         changeFontSize(`${settings.fontSize}px`)
-
-        callback && callback();
     }
 
     useEffect(() => {

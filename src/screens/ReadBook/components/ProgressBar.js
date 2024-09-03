@@ -4,10 +4,8 @@ import {useReader} from "@epubjs-react-native/core";
 import {useDebounceCallback} from "usehooks-ts";
 import {Slider} from "@miblanchard/react-native-slider";
 
-const ProgressBar = ({containerStyle, sectionsPercentages, isDisabled = true}) => {
-    const {currentLocation, theme, totalLocations, injectJavascript} = useReader();
-
-    const currentPercentage = (currentLocation?.start.percentage || 0);
+const ProgressBar = ({containerStyle, sectionsPercentages, totalPages, progress, onPageChange, isDisabled = true}) => {
+    const {theme, injectJavascript} = useReader();
 
     const debounced = useDebounceCallback((percentage) => {
         injectJavascript(`
@@ -18,6 +16,7 @@ const ProgressBar = ({containerStyle, sectionsPercentages, isDisabled = true}) =
         error("Encountered some error while changing pages with slider: " + error);
       }
     `);
+        onPageChange(parseInt((percentage * totalPages).toFixed(0)), percentage);
     }, 500);
 
     const trackStyle = {...styles.trackStyle, ...(!isDisabled && {height: 3})};
@@ -42,7 +41,7 @@ const ProgressBar = ({containerStyle, sectionsPercentages, isDisabled = true}) =
                             [sectionMarkStyle,
                                 {
                                     left: (percentage * 100).toFixed(0) + "%",
-                                    backgroundColor: percentage > currentPercentage ? colors.textAccent100 + "50" : colors.textAccent100
+                                    backgroundColor: percentage > progress ? colors.textAccent100 + "50" : colors.textAccent100
                                 }
                             ]
                         }></View>
@@ -56,8 +55,8 @@ const ProgressBar = ({containerStyle, sectionsPercentages, isDisabled = true}) =
                     minimumTrackTintColor={colors.textAccent100}
                     maximumTrackTintColor={colors.textAccent100 + "50"}
                     thumbTintColor={colors.textAccent100}
-                    step={1 / totalLocations}
-                    value={currentPercentage}
+                    step={1 / totalPages}
+                    value={progress}
                     disabled={isDisabled}
                     onValueChange={(percentage) => debounced(percentage[0])}
                 />

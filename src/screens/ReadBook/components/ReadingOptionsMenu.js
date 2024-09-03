@@ -27,7 +27,7 @@ const optionComponents = {
     [ReadingOptionTypes.SWITCH]: ReadingOptionSwitch,
 };
 
-const ReadingOptionsMenu = () => {
+const ReadingOptionsMenu = ({onClose}) => {
     const settings = useSelector(selectAllReadingSettings);
     const dispatch = useDispatch();
 
@@ -114,6 +114,7 @@ const ReadingOptionsMenu = () => {
         <MenuWrapper
             renderer={renderers.Popover}
             rendererProps={{placement: "bottom", anchorStyle: {backgroundColor: "transparent"}}}
+            onClose={onClose}
             trigger={
                 <FontAwesomeIcon
                     icon={commonIcons.options}

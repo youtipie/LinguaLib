@@ -1,14 +1,12 @@
 import {View, Text, StyleSheet} from "react-native";
 import {colors, fonts} from "../../../constants/styles";
 import {moderateScale, verticalScale} from "../../../utils/metrics";
-import {useReader} from "@epubjs-react-native/core";
 
-const Footer = ({progressbarComponent}) => {
-    const {currentLocation, totalLocations} = useReader();
+const Footer = ({progressbarComponent, totalPages, currentPage}) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.text}>{currentLocation?.start.location}/{totalLocations}</Text>
+            <Text style={styles.text}>{currentPage}/{totalPages}</Text>
             {progressbarComponent}
         </View>
     );

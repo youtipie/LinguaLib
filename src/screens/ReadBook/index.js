@@ -19,7 +19,7 @@ import useBookSettings from "../../hooks/useBookSettings";
 
 const ReadBook = ({book}) => {
     const [src, setSrc] = useState('');
-    const {applyReadingSettings} = useBookSettings(() => console.log("Change styling"));
+    const {applyReadingSettings} = useBookSettings();
     const [isLoaded, setIsLoaded] = useState(false);
     const [isOptionsVisible, setIsOptionsVisible] = useState(false);
     const [isSectionsLoading, setIsSectionsLoading] = useState(false);
@@ -81,61 +81,59 @@ const ReadBook = ({book}) => {
         })
     }
     
-    function calculateCharactersForView(fontSize, fontFamily, containerId = null) {
+    // Does not work as intended. Leave it here for now.
+    function resetLocations() {
         let pageWidth, pageHeight;
-    
-        // Get the dimensions of the container if specified, otherwise use the viewport
-        if (containerId) {
-            const container = document.getElementById(containerId);
-            pageWidth = container.clientWidth;
-            pageHeight = container.clientHeight;
-        } else {
-            pageWidth = window.innerWidth;
-            pageHeight = window.innerHeight;
-        }
-    
-        // Create a temporary element to measure character dimensions
-        const tempElement = document.createElement('p');
+
+        const container = window.frames[0].document.body;
+        pageWidth = container.clientWidth;
+        pageHeight = container.clientHeight;
+        
+        const tempElement = window.frames[0].document.createElement('p');
         tempElement.style.position = 'absolute';
         tempElement.style.visibility = 'hidden';
-        tempElement.style.fontSize = fontSize + 'px';
-        tempElement.style.fontFamily = fontFamily;
         tempElement.textContent = 'A'; // Use a common character for measurement
-        document.body.appendChild(tempElement);
+        window.frames[0].document.body.appendChild(tempElement);
     
-        // Get character width and line height
         const characterWidth = tempElement.offsetWidth;
         const lineHeight = parseFloat(getComputedStyle(tempElement).lineHeight) || fontSize;
     
-        // Remove the temporary element
-        document.body.removeChild(tempElement);
+        window.frames[0].document.body.removeChild(tempElement);
     
-        // Calculate characters per line and lines per view
         const charactersPerLine = Math.floor(pageWidth / characterWidth);
         const linesPerView = Math.floor(pageHeight / lineHeight);
     
-        // Calculate total characters
         const totalCharacters = charactersPerLine * linesPerView;
-    
-        return {
-            charactersPerLine: charactersPerLine,
-            linesPerView: linesPerView,
-            totalCharacters: totalCharacters
-        };
+        
+        book.locations.generate(totalCharacters).then(locations => {
+            window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'resetLocations', result: locations }));
+        });
     }
     
-    async function getSectionsPercentages(sectionsHrefs) {
-        const sectionsPercentages = [];
+    async function updateSections(sections) {
+        const sectionsHrefs = sections.reduce((result, section) => {
+            result.push(section.href);
+            for (let childSection of section.subitems) {
+                result.push(childSection.href);
+            }
+            return result;
+        }, [])
+
+        let sectionsPercentages = [];
+        let totalPages = 0;
+
         for (let href of sectionsHrefs) {
             try {
                 let formatedHref = href[0] === "/" ? href.slice(1, href.length) : href;
                 await rendition.display(formatedHref);
-                sectionsPercentages.push(rendition.currentLocation()?.start?.percentage);
+                const currentLocation = rendition.currentLocation();
+                totalPages += currentLocation?.start.displayed.total;
+                sectionsPercentages.push(currentLocation?.start?.percentage);
             } catch (e) {
                 error("Couldn't fetch sectionsPercentages: " + e);
             }
         }
-        window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'getSectionsPercentages', result: sectionsPercentages }));
+        window.ReactNativeWebView.postMessage(JSON.stringify({ type: "updateSections", result: {sectionsPercentages, totalPages, isLoading: false} }));
     }
     
     function loadWebFont(){
@@ -220,32 +218,44 @@ const ReadBook = ({book}) => {
         applyReadingSettings();
     }
 
+    function handleChangeBookSettings() {
+        setIsSectionsLoading(true);
+        injectJavascript(`updateSections(JSON.parse('${JSON.stringify(toc)}'));`)
+    }
+
     async function handleOnLocationChange(totalLocations, currentLocation, progress, currentSection) {
         // Page number in epubjs is strange thing.
         // Most of the time it is kinda correct, but sometimes there is two pages with same number.
-
         if (totalLocations !== 0 && !isLoaded && !isSectionsLoading) {
             if (initialLocationsRef.current.length && book.sectionsPercentages.length) {
                 finishLoading();
                 return;
             }
-
-            const sectionsHrefs = toc.reduce((result, section) => {
-                result.push(section.href);
-                for (let childSection of section.subitems) {
-                    result.push(childSection.href);
-                }
-                return result;
-            }, [])
-
-            setIsSectionsLoading(true);
-            injectJavascript(`getSectionsPercentages(JSON.parse('${JSON.stringify(sectionsHrefs)}'))`);
+            if (!initialLocationsRef.current.length) {
+                await book.changeInitialLocations(locations);
+            }
+            handleChangeBookSettings();
             return;
         }
 
         if (currentLocation.start.location !== 0 && isLoaded && !isSectionsLoading) {
-            await book.changeCurrentPage(currentLocation.start.location, currentLocation.start.percentage, currentLocation.start.cfi);
+            await book.changeCfiLocation(currentLocation.start.cfi);
         }
+    }
+
+    async function handlePageChange(dir) {
+        let page = book.page;
+
+        if (dir === "prev") {
+            if (book.page === 0) return;
+            page = book.page - 1;
+        }
+        if (dir === "next") {
+            if (book.page === book.totalPages) return;
+            page = book.page + 1;
+        }
+
+        await book.changeCurrentPage(page, page / book.totalPages);
     }
 
     function finishLoading() {
@@ -263,16 +273,24 @@ const ReadBook = ({book}) => {
     async function handleMessage(message) {
         const {type} = message;
         switch (type) {
-            case "getSectionsPercentages": {
-                finishLoading();
-                await book.changeInitialLocations(locations);
-                await book.changeSectionsPercentages(message.result);
-                break;
-            }
             case "changeLocationCfi": {
                 goToLocation(message.result);
                 break;
             }
+            case "updateSections":
+                if (message.result.isLoading) {
+                    setIsLoaded(false);
+                    setIsOptionsVisible(false);
+                    setIsSectionsLoading(false);
+                    break;
+                }
+                finishLoading();
+                const {sectionsPercentages, totalPages} = message.result;
+                await book.changeSectionsPercentages(sectionsPercentages);
+                const page = (book.page * totalPages) / book.totalPages;
+                await book.changeCurrentPage(page, page / totalPages);
+                await book.changeTotalPages(totalPages);
+                break;
             case "getElements": {
                 translate(message.result).then(() => {
                 });
@@ -296,12 +314,15 @@ const ReadBook = ({book}) => {
     const progressBar = <ProgressBar
         containerStyle={{...(!isOptionsVisible && styles.progressBarWrapper), ...styles.progressBarContainer}}
         sectionsPercentages={book.sectionsPercentages}
+        totalPages={book.totalPages}
+        progress={book.progress}
+        onPageChange={(page, percentage) => book.changeCurrentPage(page, percentage)}
         isDisabled={!isOptionsVisible}
     />;
 
     return (
         <View style={{flex: 1, backgroundColor: colors.primary200}}>
-            {!isLoaded &&
+            {(!isLoaded || isSectionsLoading) &&
                 <View
                     style={styles.spinnerContainer}
                     pointerEvents="none"
@@ -309,7 +330,8 @@ const ReadBook = ({book}) => {
                     <LoadingSpinner progressText="Loading book..."/>
                 </View>
             }
-            {isOptionsVisible && isLoaded && <Header bookTitle={book.title}/>}
+            {isOptionsVisible && isLoaded &&
+                <Header bookTitle={book.title} onSettingsClose={handleChangeBookSettings}/>}
             {src &&
                 <>
                     <Reader
@@ -328,11 +350,14 @@ const ReadBook = ({book}) => {
                             }
                         }}
                         onSingleTap={() => setIsOptionsVisible(!isOptionsVisible)}
+                        onSwipeLeft={() => handlePageChange("next")}
+                        onSwipeRight={() => handlePageChange("prev")}
                         injectedJavascript={js}
                         waitForLocationsReady={!initialLocationsRef.current.length}
                     />
                     {isOptionsVisible ?
-                        <Footer progressbarComponent={progressBar}/>
+                        <Footer progressbarComponent={progressBar} totalPages={book.totalPages}
+                                currentPage={book.page}/>
                         :
                         progressBar
                     }

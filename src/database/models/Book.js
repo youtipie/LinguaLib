@@ -42,11 +42,24 @@ export default class Book extends Model {
     }
 
     @writer
-    async changeCurrentPage(page, progress, cfiLocation) {
+    async changeCfiLocation(cfiLocation) {
+        await this.update(book => {
+            book.cfiLocation = cfiLocation;
+        })
+    }
+
+    @writer
+    async changeCurrentPage(page, progress) {
         await this.update(book => {
             book.page = page;
-            book.cfiLocation = cfiLocation;
             book.progress = progress;
+        })
+    }
+
+    @writer
+    async changeTotalPages(totalPages) {
+        await this.update(book => {
+            book.totalPages = totalPages;
         })
     }
 

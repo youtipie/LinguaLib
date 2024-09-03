@@ -6,7 +6,7 @@ import {horizontalScale, moderateScale, verticalScale} from "../../../utils/metr
 import {useNavigation} from "@react-navigation/native";
 import ReadingOptionsMenu from "./ReadingOptionsMenu";
 
-const Header = ({bookTitle}) => {
+const Header = ({bookTitle, onSettingsClose}) => {
     const {section, currentLocation} = useReader();
     const navigation = useNavigation();
 
@@ -20,7 +20,7 @@ const Header = ({bookTitle}) => {
                 <TouchableOpacity onPress={handleGoBack}>
                     <FontAwesomeIcon icon={drawerIcons.goBack} size={moderateScale(24)} color={colors.textPrimary200}/>
                 </TouchableOpacity>
-                <ReadingOptionsMenu/>
+                <ReadingOptionsMenu onClose={onSettingsClose}/>
             </View>
             <View style={styles.lowerContainer}>
                 <Text style={styles.title}>{bookTitle}</Text>
