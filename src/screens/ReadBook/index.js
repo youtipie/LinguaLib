@@ -54,17 +54,48 @@ const ReadBook = ({book}) => {
     function error(data){
         window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'error', result: data }));
     }
-
-    function getElements(){
+    
+    function getTextNodes(element) {
+        const nodes = [];
+        for (let node of element.childNodes) {
+            if (node.nodeType === Node.TEXT_NODE && node.textContent.trim().length > 1) {
+                nodes.push(node);
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                nodes.push(...getTextNodes(node));
+            }
+        }
+        return nodes;
+    }
+    
+    async function findIndexOfCurrentTextElement() {
+        let index = -1;
+        const range = makeRangeCfi(rendition.currentLocation().start.cfi, rendition.currentLocation().end.cfi);
+        await book.getRange(range).then(r => {
+            const content = r.toString().replace(/\\n+/g, "\\n").split("\\n")
+                .filter(element => element.trim().length > 1)
+                .map(element => element.trim());
+            index = getElementsInSection().findIndex(element => element.textContent.includes(content[0]));
+        });
+        return index;
+    }
+    
+    function getElementsInSection() {
         const elements = [];
         rendition.getContents().forEach(function(contents) {
-            const paragraphs = contents.document.querySelectorAll("p");
-            paragraphs.forEach(function(paragraph) {
-                elements.push(paragraph);
-            });
+            // const textWrapperElement = contents.document.querySelectorAll("body > *");
+            // const textElements = textWrapperElement.length === 1 ?  textWrapperElement[0].children : textWrapperElement;
+            //
+            // for (let i = 0; i < textElements.length; i++) {
+            //     const element = textElements[i];
+            //     if (element.textContent.trim()) {
+            //         elements.push(element);
+            //     }
+            // };
+            elements.push(...getTextNodes(contents.document.body));
         });
         currentElementsInSection = elements;
-        window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'getElements', result: elements.map(element => element.textContent) }));
+        return elements;
+        // window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'getElementsInSection', result: elements.map(element => element.textContent) }));
     }
     
     function sectionChanged() {
@@ -75,7 +106,7 @@ const ReadBook = ({book}) => {
             
             if (currentSectionHref !== newSectionHref) {
                 // log("Change section. Current section: " + newSectionHref);
-                getElements();
+                getElementsInSection();
                 currentSectionHref = newSectionHref;
             }
         })
@@ -140,6 +171,7 @@ const ReadBook = ({book}) => {
         let script = document.createElement('script');
         script.src = "https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js";
         document.head.appendChild(script);
+        sectionChanged();
     }
     loadWebFont();
     `
@@ -220,7 +252,7 @@ const ReadBook = ({book}) => {
 
     function handleChangeBookSettings() {
         setIsSectionsLoading(true);
-        injectJavascript(`updateSections(JSON.parse('${JSON.stringify(toc)}'));`)
+        injectJavascript(`updateSections(JSON.parse('${JSON.stringify(toc).replace(/\\n|\\t/g, "")}'));`)
     }
 
     async function handleOnLocationChange(totalLocations, currentLocation, progress, currentSection) {
@@ -291,9 +323,9 @@ const ReadBook = ({book}) => {
                 await book.changeCurrentPage(page, page / totalPages);
                 await book.changeTotalPages(totalPages);
                 break;
-            case "getElements": {
-                translate(message.result).then(() => {
-                });
+            case "getElementsInSection": {
+                // translate(message.result).then(() => {
+                // });
                 break;
             }
             case "log": {
