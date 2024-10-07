@@ -31,6 +31,22 @@ export default appSchema({
                 {name: "folder_id", type: "string", isIndexed: true},
                 {name: "last_interaction_at", type: "number"}
             ]
+        }),
+        tableSchema({
+            name: "sections",
+            columns: [
+                {name: "href", type: "string"},
+                {name: "book_id", type: "string"},
+            ]
+        }),
+        tableSchema({
+            name: "text_elements",
+            columns: [
+                {name: "content", type: "string"},
+                {name: "index", type: "number"},
+                {name: "is_translated", type: "boolean"},
+                {name: "section_id", type: "string", isIndexed: true},
+            ]
         })
     ]
 })

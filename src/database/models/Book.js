@@ -1,5 +1,5 @@
 import {Model} from '@nozbe/watermelondb'
-import {date, field, json, relation, text, writer} from "@nozbe/watermelondb/decorators";
+import {children, date, field, json, relation, text, writer} from "@nozbe/watermelondb/decorators";
 import {StorageAccessFramework} from "expo-file-system"
 import getFilename from "../../utils/getFilename";
 
@@ -11,6 +11,7 @@ export default class Book extends Model {
     static table = "books"
     static associations = {
         folders: {type: "belongs_to", key: "folder_id"},
+        sections: {type: "has_many", foreignKey: "book_id"},
     }
 
     @text("title") title
@@ -29,6 +30,7 @@ export default class Book extends Model {
     @json("sections_percentages", sanitizeSections) sectionsPercentages
     @relation("folders", "folder_id") folder
     @date("last_interaction_at") lastInteractionAt
+    @children("sections") sections
 
     get filename() {
         return getFilename(this.uri)
@@ -100,6 +102,7 @@ export default class Book extends Model {
     async delete() {
         await StorageAccessFramework.deleteAsync(this.uri);
         await this.destroyPermanently();
+        await this.sections.destroyAllPermanently();
         return true;
     }
 

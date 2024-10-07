@@ -15,6 +15,8 @@ import ProgressBar from "./components/ProgressBar";
 import {horizontalScale, verticalScale} from "../../utils/metrics";
 import Footer from "./components/Footer";
 import useBookSettings from "../../hooks/useBookSettings";
+import SectionDAO from "../../database/DAO/SectionDAO";
+import TextElementDAO from "../../database/DAO/TextElementDAO";
 
 
 const ReadBook = ({book}) => {
@@ -45,8 +47,6 @@ const ReadBook = ({book}) => {
     } = useReader();
 
     const js = `
-    let currentElementsInSection = null;
-
     function log(data){
         window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'log', result: data }));
     }
@@ -58,7 +58,7 @@ const ReadBook = ({book}) => {
     function getTextNodes(element) {
         const nodes = [];
         for (let node of element.childNodes) {
-            if (node.nodeType === Node.TEXT_NODE && node.textContent.trim().length > 1) {
+            if (node.nodeType === Node.TEXT_NODE && node.textContent.trim().length >= 1) {
                 nodes.push(node);
             } else if (node.nodeType === Node.ELEMENT_NODE) {
                 nodes.push(...getTextNodes(node));
@@ -71,10 +71,28 @@ const ReadBook = ({book}) => {
         let index = -1;
         const range = makeRangeCfi(rendition.currentLocation().start.cfi, rendition.currentLocation().end.cfi);
         await book.getRange(range).then(r => {
-            const content = r.toString().replace(/\\n+/g, "\\n").split("\\n")
+            const content = r.toString()
+                .replace(/\\n+/g, "\\n")
+                .split("\\n")
                 .filter(element => element.trim().length > 1)
-                .map(element => element.trim());
-            index = getElementsInSection().findIndex(element => element.textContent.includes(content[0]));
+                .map(element => element.replace(/\\s+/g, ""));
+                
+            const elementsInSectionArray = getElementsInSection().map(element => element.textContent.replace(/\\s+/g, ""));
+            const elementsInSectionString = elementsInSectionArray.join("");
+            const searchIndex = elementsInSectionString.indexOf(content[0])
+            
+            if (searchIndex !== -1) {
+                let currentIndex = 0;
+                for (let i = 0; i < elementsInSectionArray.length; i++) {
+                    currentIndex += elementsInSectionArray[i].length;
+                    if (currentIndex > searchIndex) {
+                        index = i;
+                        return;
+                    }
+                }
+            }
+            // If we cannot find text element, just start from first one
+            index = 0;
         });
         return index;
     }
@@ -82,20 +100,9 @@ const ReadBook = ({book}) => {
     function getElementsInSection() {
         const elements = [];
         rendition.getContents().forEach(function(contents) {
-            // const textWrapperElement = contents.document.querySelectorAll("body > *");
-            // const textElements = textWrapperElement.length === 1 ?  textWrapperElement[0].children : textWrapperElement;
-            //
-            // for (let i = 0; i < textElements.length; i++) {
-            //     const element = textElements[i];
-            //     if (element.textContent.trim()) {
-            //         elements.push(element);
-            //     }
-            // };
             elements.push(...getTextNodes(contents.document.body));
         });
-        currentElementsInSection = elements;
         return elements;
-        // window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'getElementsInSection', result: elements.map(element => element.textContent) }));
     }
     
     function sectionChanged() {
@@ -105,9 +112,9 @@ const ReadBook = ({book}) => {
             const newSectionHref = location.start.href;
             
             if (currentSectionHref !== newSectionHref) {
-                // log("Change section. Current section: " + newSectionHref);
-                getElementsInSection();
                 currentSectionHref = newSectionHref;
+                const textElements = getElementsInSection();
+                window.ReactNativeWebView.postMessage(JSON.stringify({ type: "getElementsInSection", result: {href: currentSectionHref, textElements: textElements.map(element => element.textContent)} }));
             }
         })
     }
@@ -271,6 +278,15 @@ const ReadBook = ({book}) => {
         }
 
         if (currentLocation.start.location !== 0 && isLoaded && !isSectionsLoading) {
+            injectJavascript(`
+                (async () => {
+                    const textElements = getElementsInSection();
+                    const index = await findIndexOfCurrentTextElement();
+                    if (index >= 0) {
+                        window.ReactNativeWebView.postMessage(JSON.stringify({ type: "getCurrentElementIndex", result: index }));
+                    }
+                })()
+            `)
             await book.changeCfiLocation(currentLocation.start.cfi);
         }
     }
@@ -324,8 +340,32 @@ const ReadBook = ({book}) => {
                 await book.changeTotalPages(totalPages);
                 break;
             case "getElementsInSection": {
-                // translate(message.result).then(() => {
-                // });
+                const {href, textElements} = message.result;
+                if (await SectionDAO.getSectionByHrefCount(href, book) === 0) {
+                    const section = await SectionDAO.addSection(href, book);
+                    // Section might consist only of poster image
+                    if (textElements.length > 0) {
+                        await TextElementDAO.batchAddTextElement(textElements.map((value, index) => ({
+                            index: index,
+                            content: value
+                        })), section);
+                    }
+                }
+                if (isLoaded && !isSectionsLoading) {
+                    // Replace existing text with translated
+                    const section = (await SectionDAO.getSectionByHref(href, book))[0];
+                }
+                break;
+            }
+            case "getCurrentElementIndex": {
+                const index = message.result;
+                const section = await SectionDAO.getSectionByHref(getCurrentLocation().start.href, book);
+                if (section.length > 0) {
+                    const textElements = await TextElementDAO.getTextElementByIndex(index, section[0]);
+                    if (textElements.length > 0) {
+                        console.log(textElements[0].content)
+                    }
+                }
                 break;
             }
             case "log": {
