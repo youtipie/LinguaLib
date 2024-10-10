@@ -6,8 +6,10 @@ const sections = database.collections.get("sections");
 const querySectionByHref = (href, book) => sections.query(Q.and(Q.where("href", href), Q.where("book_id", book.id)));
 
 export default {
-    getSectionByHref: (href, book) => querySectionByHref(href, book).fetch(),
-    getSectionByHrefCount: (href, book) => querySectionByHref(href, book).fetchCount(),
+    getSectionByHref: async (href, book) => {
+        const sections = await querySectionByHref(href, book).fetch();
+        return sections.length > 0 ? sections[0] : null;
+    },
     addSection: async (href, book) => {
         let newSection;
         await database.write(async () => {

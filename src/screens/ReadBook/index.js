@@ -17,182 +17,58 @@ import Footer from "./components/Footer";
 import useBookSettings from "../../hooks/useBookSettings";
 import SectionDAO from "../../database/DAO/SectionDAO";
 import TextElementDAO from "../../database/DAO/TextElementDAO";
+import {revertSpaces} from "../../database/models/TextElement";
+import {useSelector} from "react-redux";
+import {selectAllReadingSettings} from "../../store/reducers/settings";
+import injectedJavascript from "../../constants/injectedJavascript";
 
-
+// TODO: Refactor))))))))))))))
 const ReadBook = ({book}) => {
     const [src, setSrc] = useState('');
     const {applyReadingSettings} = useBookSettings();
     const [isLoaded, setIsLoaded] = useState(false);
     const [isOptionsVisible, setIsOptionsVisible] = useState(false);
     const [isSectionsLoading, setIsSectionsLoading] = useState(false);
+    const [isTranslating, setIsTranslating] = useState(false);
+
+    const {translation} = useSelector(selectAllReadingSettings);
 
     // We don't want to rerender book when this changes
     const initialLocationsRef = useRef(book.initialLocations);
+    const abortionControllerRef = useRef(null);
+
+    function cancelTranslationLoop() {
+        if (abortionControllerRef.current) {
+            abortionControllerRef.current.abort();
+            abortionControllerRef.current = null;
+        }
+    }
 
     const {showModal} = useModal();
     const {
         injectJavascript,
-        changeFontSize,
-        changeTheme,
-        theme,
-        changeFontFamily,
-        totalLocations,
         goToLocation,
         goNext,
         goPrevious,
         toc,
-        section,
         getCurrentLocation,
         locations
     } = useReader();
 
-    const js = `
-    function log(data){
-        window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'log', result: data }));
-    }
-
-    function error(data){
-        window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'error', result: data }));
-    }
-    
-    function getTextNodes(element) {
-        const nodes = [];
-        for (let node of element.childNodes) {
-            if (node.nodeType === Node.TEXT_NODE && node.textContent.trim().length >= 1) {
-                nodes.push(node);
-            } else if (node.nodeType === Node.ELEMENT_NODE) {
-                nodes.push(...getTextNodes(node));
-            }
-        }
-        return nodes;
-    }
-    
-    async function findIndexOfCurrentTextElement() {
-        let index = -1;
-        const range = makeRangeCfi(rendition.currentLocation().start.cfi, rendition.currentLocation().end.cfi);
-        await book.getRange(range).then(r => {
-            const content = r.toString()
-                .replace(/\\n+/g, "\\n")
-                .split("\\n")
-                .filter(element => element.trim().length > 1)
-                .map(element => element.replace(/\\s+/g, ""));
-                
-            const elementsInSectionArray = getElementsInSection().map(element => element.textContent.replace(/\\s+/g, ""));
-            const elementsInSectionString = elementsInSectionArray.join("");
-            const searchIndex = elementsInSectionString.indexOf(content[0])
-            
-            if (searchIndex !== -1) {
-                let currentIndex = 0;
-                for (let i = 0; i < elementsInSectionArray.length; i++) {
-                    currentIndex += elementsInSectionArray[i].length;
-                    if (currentIndex > searchIndex) {
-                        index = i;
-                        return;
-                    }
-                }
-            }
-            // If we cannot find text element, just start from first one
-            index = 0;
-        });
-        return index;
-    }
-    
-    function getElementsInSection() {
-        const elements = [];
-        rendition.getContents().forEach(function(contents) {
-            elements.push(...getTextNodes(contents.document.body));
-        });
-        return elements;
-    }
-    
-    function sectionChanged() {
-        let currentSectionHref = null;
-        
-        rendition.on("relocated", (location) => {
-            const newSectionHref = location.start.href;
-            
-            if (currentSectionHref !== newSectionHref) {
-                currentSectionHref = newSectionHref;
-                const textElements = getElementsInSection();
-                window.ReactNativeWebView.postMessage(JSON.stringify({ type: "getElementsInSection", result: {href: currentSectionHref, textElements: textElements.map(element => element.textContent)} }));
-            }
-        })
-    }
-    
-    // Does not work as intended. Leave it here for now.
-    function resetLocations() {
-        let pageWidth, pageHeight;
-
-        const container = window.frames[0].document.body;
-        pageWidth = container.clientWidth;
-        pageHeight = container.clientHeight;
-        
-        const tempElement = window.frames[0].document.createElement('p');
-        tempElement.style.position = 'absolute';
-        tempElement.style.visibility = 'hidden';
-        tempElement.textContent = 'A'; // Use a common character for measurement
-        window.frames[0].document.body.appendChild(tempElement);
-    
-        const characterWidth = tempElement.offsetWidth;
-        const lineHeight = parseFloat(getComputedStyle(tempElement).lineHeight) || fontSize;
-    
-        window.frames[0].document.body.removeChild(tempElement);
-    
-        const charactersPerLine = Math.floor(pageWidth / characterWidth);
-        const linesPerView = Math.floor(pageHeight / lineHeight);
-    
-        const totalCharacters = charactersPerLine * linesPerView;
-        
-        book.locations.generate(totalCharacters).then(locations => {
-            window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'resetLocations', result: locations }));
-        });
-    }
-    
-    async function updateSections(sections) {
-        const sectionsHrefs = sections.reduce((result, section) => {
-            result.push(section.href);
-            for (let childSection of section.subitems) {
-                result.push(childSection.href);
-            }
-            return result;
-        }, [])
-
-        let sectionsPercentages = [];
-        let totalPages = 0;
-
-        for (let href of sectionsHrefs) {
-            try {
-                let formatedHref = href[0] === "/" ? href.slice(1, href.length) : href;
-                await rendition.display(formatedHref);
-                const currentLocation = rendition.currentLocation();
-                totalPages += currentLocation?.start.displayed.total;
-                sectionsPercentages.push(currentLocation?.start?.percentage);
-            } catch (e) {
-                error("Couldn't fetch sectionsPercentages: " + e);
-            }
-        }
-        window.ReactNativeWebView.postMessage(JSON.stringify({ type: "updateSections", result: {sectionsPercentages, totalPages, isLoading: false} }));
-    }
-    
-    function loadWebFont(){
-        let script = document.createElement('script');
-        script.src = "https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js";
-        document.head.appendChild(script);
-        sectionChanged();
-    }
-    loadWebFont();
-    `
-
     async function translate(textElementsArray) {
-        let trimmedText = textElementsArray.map(element => element.trim());
-
-        if (trimmedText.join("").length < 1) {
+        if (textElementsArray.length < 1) {
             return;
         }
 
-        const textChunks = trimmedText.reduce((chunks, element) => {
+        const textElementChunks = textElementsArray.reduce((chunks, element) => {
             const lastChunk = chunks[chunks.length - 1];
-            if (lastChunk && (lastChunk.join("").length + element.length <= 5000)) {
+            if (!lastChunk) {
+                chunks.push([element]);
+                return chunks;
+            }
+            const lastChunkLen = lastChunk.map((chunk) => revertSpaces(chunk.content)).join("").length;
+            const currentElementLen = revertSpaces(element.content).length;
+            if (lastChunk && (lastChunkLen + currentElementLen <= 5000)) {
                 lastChunk.push(element);
             } else {
                 chunks.push([element]);
@@ -200,44 +76,43 @@ const ReadBook = ({book}) => {
             return chunks;
         }, []);
 
-        let translatedTextArray = [];
-
         function translateLoop() {
-            const fetchPromises = textChunks.map((textChunk, index) => {
+            abortionControllerRef.current = new AbortController();
+            const {signal} = abortionControllerRef.current;
+
+            const fetchPromises = textElementChunks.map((textChunk, index) => {
                 return new Promise(resolve => {
-                    setTimeout(async () => {
+                    const timeoutId = setTimeout(async () => {
+                        if (signal.aborted) {
+                            resolve();
+                            return;
+                        }
+
                         try {
-                            const translatedText = await translateGoogle(textChunk.join("\n"));
-                            translatedTextArray.push(...translatedText.split("\n"));
+                            const translatedText = await translateGoogle(textChunk.map(element => revertSpaces(element.content)))
+                            for (let i = 0; i < translatedText.length; i++) {
+                                await textChunk[i].changeContent(translatedText[i]);
+                                injectJavascript(`replaceTextElementByIndex("${escapeString(translatedText[i])}", ${textChunk[i].index})`);
+                            }
                         } catch (e) {
                             console.error(e);
                         } finally {
+                            setIsTranslating(false);
                             resolve();
                         }
                     }, 300 * index);
+
+                    signal.addEventListener('abort', () => {
+                        clearTimeout(timeoutId);
+                        resolve();
+                    });
                 });
             });
             return Promise.all(fetchPromises);
         }
 
+        setIsTranslating(true);
         await translateLoop();
-
-        for (let i = 0; i < translatedTextArray.length; i++) {
-            const js = `
-            try {
-                function replaceContentByIndex(translatedContent){
-                    if (currentElementsInSection[parseInt(${i})]) {
-                        // log(currentElementsInSection[parseInt(${i})].textContent);
-                        // log(translatedContent);
-                        currentElementsInSection[parseInt(${i})].textContent = translatedContent;
-                    }
-                }
-                replaceContentByIndex("${escapeString(translatedTextArray[i])}")
-            } catch (e) {
-                error(e.toString());
-            }`;
-            injectJavascript(js)
-        }
     }
 
     async function getSrc(uri) {
@@ -280,7 +155,6 @@ const ReadBook = ({book}) => {
         if (currentLocation.start.location !== 0 && isLoaded && !isSectionsLoading) {
             injectJavascript(`
                 (async () => {
-                    const textElements = getElementsInSection();
                     const index = await findIndexOfCurrentTextElement();
                     if (index >= 0) {
                         window.ReactNativeWebView.postMessage(JSON.stringify({ type: "getCurrentElementIndex", result: index }));
@@ -302,7 +176,6 @@ const ReadBook = ({book}) => {
             if (book.page === book.totalPages) return;
             page = book.page + 1;
         }
-
         await book.changeCurrentPage(page, page / book.totalPages);
     }
 
@@ -341,7 +214,8 @@ const ReadBook = ({book}) => {
                 break;
             case "getElementsInSection": {
                 const {href, textElements} = message.result;
-                if (await SectionDAO.getSectionByHrefCount(href, book) === 0) {
+                const section = await SectionDAO.getSectionByHref(href, book);
+                if (!section) {
                     const section = await SectionDAO.addSection(href, book);
                     // Section might consist only of poster image
                     if (textElements.length > 0) {
@@ -351,20 +225,34 @@ const ReadBook = ({book}) => {
                         })), section);
                     }
                 }
-                if (isLoaded && !isSectionsLoading) {
-                    // Replace existing text with translated
-                    const section = (await SectionDAO.getSectionByHref(href, book))[0];
+
+                if (isLoaded && !isSectionsLoading && translation) {
+                    const section = (await SectionDAO.getSectionByHref(href, book));
+                    if (!section) {
+                        break;
+                    }
+                    const textElements = await section.textElements;
+                    for (let i = 0; i < textElements.length; i++) {
+                        injectJavascript(`replaceTextElementByIndex("${escapeString(revertSpaces(textElements[i].content))}", ${textElements[i].index})`);
+                    }
                 }
                 break;
             }
             case "getCurrentElementIndex": {
-                const index = message.result;
                 const section = await SectionDAO.getSectionByHref(getCurrentLocation().start.href, book);
-                if (section.length > 0) {
-                    const textElements = await TextElementDAO.getTextElementByIndex(index, section[0]);
-                    if (textElements.length > 0) {
-                        console.log(textElements[0].content)
-                    }
+                if (!section) {
+                    break;
+                }
+                const currentIndex = message.result;
+                const lastTranslatedIndex = await TextElementDAO.getLastTranslatedElementIndex(section);
+                let indexToTranslate = currentIndex;
+                if (lastTranslatedIndex !== 0) {
+                    indexToTranslate = Math.min(currentIndex, lastTranslatedIndex);
+                }
+                const textElementsToTranslate = await TextElementDAO.getNotTranslatedElements(section, indexToTranslate);
+                if (translation && textElementsToTranslate.length > 0) {
+                    cancelTranslationLoop();
+                    translate(textElementsToTranslate);
                 }
                 break;
             }
@@ -397,11 +285,21 @@ const ReadBook = ({book}) => {
             {(!isLoaded || isSectionsLoading) &&
                 <View
                     style={styles.spinnerContainer}
-                    pointerEvents="none"
+                    pointerEvents="auto"
                 >
                     <LoadingSpinner progressText="Loading book..."/>
                 </View>
             }
+            {isTranslating &&
+                <View
+                    style={{
+                        ...styles.spinnerContainer,
+                        backgroundColor: styles.spinnerContainer.backgroundColor + "85"
+                    }}
+                    pointerEvents="auto"
+                >
+                    <LoadingSpinner progressText="Translating..."/>
+                </View>}
             {isOptionsVisible && isLoaded &&
                 <Header bookTitle={book.title} onSettingsClose={handleChangeBookSettings}/>}
             {src &&
@@ -424,7 +322,7 @@ const ReadBook = ({book}) => {
                         onSingleTap={() => setIsOptionsVisible(!isOptionsVisible)}
                         onSwipeLeft={() => handlePageChange("next")}
                         onSwipeRight={() => handlePageChange("prev")}
-                        injectedJavascript={js}
+                        injectedJavascript={injectedJavascript}
                         waitForLocationsReady={!initialLocationsRef.current.length}
                     />
                     {isOptionsVisible ?

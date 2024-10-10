@@ -1,23 +1,24 @@
 import database from "../database";
-import {Q} from "@nozbe/watermelondb";
+import {replaceSpaces} from "../models/TextElement";
 
 const textElements = database.collections.get("text_elements");
 
 export default {
-    // addTextElement: async (content, section) => {
-    //     await database.write(async () => {
-    //         await textElements.create(textElement => {
-    //             textElement.content = content;
-    //             textElement.section.set(section);
-    //         });
-    //     });
-    // },
-    getTextElementByIndex: (index, section) => textElements.query(Q.and(Q.where("index", index), Q.where("section_id", section.id))).fetch(),
+    getLastTranslatedElementIndex: async (section) => {
+        const textElements = await section.textElements;
+        return textElements
+            .filter(element => element.isTranslated)
+            .reduce((max, element) => Math.max(max, element.index), 0);
+    },
+    getNotTranslatedElements: async (section, startingIndex = 0) => {
+        const textElements = await section.textElements;
+        return textElements.filter(element => !element.isTranslated && element.index >= startingIndex);
+    },
     batchAddTextElement: async (contentsData, section) => {
         await database.write(async () => {
             const newTextElements = contentsData.map(contentData =>
                 textElements.prepareCreate(textElement => {
-                    textElement.content = contentData.content;
+                    textElement.content = replaceSpaces(contentData.content);
                     textElement.index = contentData.index;
                     textElement.section.set(section);
                 })

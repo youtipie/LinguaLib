@@ -1,1 +1,0 @@
-export const GOOGLE_TRANSLATE_ENDPOINT = "http://192.168.0.163:8899/translate?text="
