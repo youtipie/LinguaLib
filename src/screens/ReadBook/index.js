@@ -26,11 +26,16 @@ import Constants from "expo-constants";
 // TODO: Refactor))))))))))))))
 const ReadBook = ({book}) => {
     const [src, setSrc] = useState('');
-    const {applyReadingSettings} = useBookSettings();
     const [isLoaded, setIsLoaded] = useState(false);
     const [isOptionsVisible, setIsOptionsVisible] = useState(false);
     const [isSectionsLoading, setIsSectionsLoading] = useState(false);
     const [isTranslating, setIsTranslating] = useState(false);
+    const {applyReadingSettings} = useBookSettings(() => {
+        if (isLoaded) {
+            setShouldUpdateSettings(true)
+        }
+    });
+    const [shouldUpdateSettings, setShouldUpdateSettings] = useState(false);
 
     const {translation} = useSelector(selectAllReadingSettings);
 
@@ -135,6 +140,13 @@ const ReadBook = ({book}) => {
     }
 
     function handleChangeBookSettings() {
+        if (shouldUpdateSettings) {
+            updateSections();
+        }
+        setShouldUpdateSettings(false);
+    }
+
+    function updateSections() {
         setIsSectionsLoading(true);
         injectJavascript(`updateSections(JSON.parse('${JSON.stringify(toc).replace(/\\n|\\t/g, "")}'));`)
     }
@@ -150,7 +162,7 @@ const ReadBook = ({book}) => {
             if (!initialLocationsRef.current.length) {
                 await book.changeInitialLocations(locations);
             }
-            handleChangeBookSettings();
+            updateSections();
             return;
         }
 
@@ -273,6 +285,10 @@ const ReadBook = ({book}) => {
         !src && getSrc(book.uri);
     }, []);
 
+    useEffect(() => {
+
+    }, []);
+
     const progressBar = <ProgressBar
         containerStyle={{...(!isOptionsVisible && styles.progressBarWrapper), ...styles.progressBarContainer}}
         sectionsPercentages={book.sectionsPercentages}
@@ -303,7 +319,8 @@ const ReadBook = ({book}) => {
                     <LoadingSpinner progressText="Translating..."/>
                 </View>}
             {isOptionsVisible && isLoaded &&
-                <Header bookTitle={book.title} onSettingsClose={handleChangeBookSettings}/>}
+                <Header bookTitle={book.title} onSettingsClose={handleChangeBookSettings}/>
+            }
             {src &&
                 <>
                     <Reader
