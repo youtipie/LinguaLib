@@ -7,6 +7,7 @@ import {StyleSheet} from "react-native";
 import {horizontalScale, moderateScale} from "../../utils/metrics";
 import DrawerIcon from "./DrawerIcon";
 import {DrawerActions} from "@react-navigation/native";
+import Constants from 'expo-constants';
 
 
 const DrawerCustomContent = (props) => {
@@ -40,6 +41,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 0,
         borderRadius: 0,
         marginTop: 0,
+        paddingTop: Constants.statusBarHeight
     },
     scrollView: {
         paddingTop: 0,

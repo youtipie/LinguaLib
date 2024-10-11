@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Reader, Themes, useReader} from "@epubjs-react-native/core";
+import {Reader, useReader} from "@epubjs-react-native/core";
 import {StyleSheet, View} from "react-native";
 import {withObservables} from "@nozbe/watermelondb/react";
 import {useFileSystem} from "@epubjs-react-native/expo-file-system";
@@ -21,6 +21,7 @@ import {revertSpaces} from "../../database/models/TextElement";
 import {useSelector} from "react-redux";
 import {selectAllReadingSettings} from "../../store/reducers/settings";
 import injectedJavascript from "../../constants/injectedJavascript";
+import Constants from "expo-constants";
 
 // TODO: Refactor))))))))))))))
 const ReadBook = ({book}) => {
@@ -52,7 +53,8 @@ const ReadBook = ({book}) => {
         goPrevious,
         toc,
         getCurrentLocation,
-        locations
+        locations,
+        theme
     } = useReader();
 
     async function translate(textElementsArray) {
@@ -281,7 +283,7 @@ const ReadBook = ({book}) => {
     />;
 
     return (
-        <View style={{flex: 1, backgroundColor: colors.primary200}}>
+        <View style={{flex: 1, backgroundColor: theme.body.background, paddingTop: Constants.statusBarHeight}}>
             {(!isLoaded || isSectionsLoading) &&
                 <View
                     style={styles.spinnerContainer}
@@ -355,9 +357,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: horizontalScale(15),
     },
     spinnerContainer: {
-        position: "absolute",
-        width: "100%",
-        height: "100%",
+        ...StyleSheet.absoluteFillObject,
         backgroundColor: colors.primary200,
         zIndex: 10000
     }

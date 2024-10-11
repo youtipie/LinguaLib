@@ -1,4 +1,3 @@
-import {StatusBar} from "react-native";
 import {fonts} from "./src/constants/styles";
 import * as SplashScreen from "expo-splash-screen";
 import {useFonts} from "expo-font";
@@ -7,6 +6,7 @@ import Navigation from "./src/components/navigation/Navigation";
 import {Provider} from "react-redux";
 import {store, persistor} from "./src/store/store";
 import {PersistGate} from "redux-persist/integration/react";
+import {StatusBar} from "expo-status-bar";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -28,7 +28,7 @@ export default function App() {
 
     return (
         <>
-            <StatusBar style="light"/>
+            <StatusBar style="light" translucent={true}/>
             <Provider store={store}>
                 <PersistGate loading={null} persistor={persistor}>
                     <Navigation/>

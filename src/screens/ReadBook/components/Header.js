@@ -5,6 +5,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {horizontalScale, moderateScale, verticalScale} from "../../../utils/metrics";
 import {useNavigation} from "@react-navigation/native";
 import ReadingOptionsMenu from "./ReadingOptionsMenu";
+import Constants from "expo-constants";
 
 const Header = ({bookTitle, onSettingsClose}) => {
     const {section, currentLocation} = useReader();
@@ -37,6 +38,7 @@ export default Header;
 const styles = StyleSheet.create({
     container: {
         position: "absolute",
+        paddingTop: Constants.statusBarHeight,
         width: "100%",
         paddingHorizontal: horizontalScale(15),
         backgroundColor: colors.primary200,

@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import {ActivityIndicator, View, StyleSheet, Text, Dimensions, BackHandler} from "react-native";
 import {colors, fonts} from "../constants/styles";
 import {moderateScale} from "../utils/metrics";
+import Constants from "expo-constants";
 
 const LoadingSpinner = ({label, progressText, onDiscard}) => {
     const [spinnerHeight, setSpinnerHeight] = useState(0);
@@ -41,9 +42,7 @@ export default LoadingSpinner;
 
 const styles = StyleSheet.create({
     spinnerContainer: {
-        position: "absolute",
-        width: Dimensions.get("window").width,
-        height: Dimensions.get("window").height,
+        ...StyleSheet.absoluteFillObject,
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: "rgba(0, 0, 0, 0.4)",
