@@ -22,12 +22,26 @@ export default class TextElement extends Model {
 
     @writer
     async changeContent(content) {
+        let updatedContent = content;
         if (content) {
             await this.update(textElement => {
-                textElement.content = replaceSpaces(content);
+                const oldContent = revertSpaces(textElement.content);
+                const hasLeadingSpace = oldContent.startsWith(" ");
+                const hasTrailingSpace = oldContent.endsWith(" ");
+
+                // Add leading and trailing spaces to the new content
+                if (hasLeadingSpace) {
+                    updatedContent = " " + updatedContent;
+                }
+                if (hasTrailingSpace) {
+                    updatedContent += " ";
+                }
+
+                textElement.content = replaceSpaces(updatedContent);
                 textElement.isTranslated = true;
             })
         }
+        return updatedContent;
     }
 
     @writer

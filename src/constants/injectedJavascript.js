@@ -45,8 +45,6 @@ const injectedJavascript = `
                     }
                 }
             }
-            // If we cannot find text element, just start from first one
-            index = 0;
         });
         return index;
     }
@@ -75,6 +73,13 @@ const injectedJavascript = `
                 window.ReactNativeWebView.postMessage(JSON.stringify({ type: "getElementsInSection", result: {href: currentSectionHref, textElements: currentTextElementsInSection.map(element => element.textContent)} }));
             }
         })
+    }
+    
+    async function getCurrentElementIndex() {
+        const index = await findIndexOfCurrentTextElement();
+        if (index >= 0) {
+            window.ReactNativeWebView.postMessage(JSON.stringify({ type: "getCurrentElementIndex", result: index }));
+        }
     }
     
     async function updateSections(sections) {

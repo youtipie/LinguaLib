@@ -98,8 +98,8 @@ const ReadBook = ({book}) => {
                         try {
                             const translatedText = await translateGoogle(textChunk.map(element => revertSpaces(element.content)))
                             for (let i = 0; i < translatedText.length; i++) {
-                                await textChunk[i].changeContent(translatedText[i]);
-                                injectJavascript(`replaceTextElementByIndex("${escapeString(translatedText[i])}", ${textChunk[i].index})`);
+                                const sanitizedContent = await textChunk[i].changeContent(translatedText[i]);
+                                injectJavascript(`replaceTextElementByIndex("${escapeString(sanitizedContent)}", ${textChunk[i].index})`);
                             }
                         } catch (e) {
                             console.error(e);
@@ -120,6 +120,7 @@ const ReadBook = ({book}) => {
 
         setIsTranslating(true);
         await translateLoop();
+        goToLocation(book.cfiLocation); // May cause bugs. But not for now
     }
 
     async function getSrc(uri) {
@@ -167,14 +168,7 @@ const ReadBook = ({book}) => {
         }
 
         if (currentLocation.start.location !== 0 && isLoaded && !isSectionsLoading) {
-            injectJavascript(`
-                (async () => {
-                    const index = await findIndexOfCurrentTextElement();
-                    if (index >= 0) {
-                        window.ReactNativeWebView.postMessage(JSON.stringify({ type: "getCurrentElementIndex", result: index }));
-                    }
-                })()
-            `)
+            injectJavascript("getCurrentElementIndex()");
             await book.changeCfiLocation(currentLocation.start.cfi);
         }
     }

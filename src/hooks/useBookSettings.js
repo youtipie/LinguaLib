@@ -29,6 +29,12 @@ const UseBookSettings = (onSettingsChange) => {
         onSettingsChange?.();
     }, [settings.colorScheme, settings.textIndent, settings.lineSpacing, settings.fontBoldness, settings.textAlignment, settings.lineBreaks, settings.font])
 
+    useEffect(() => {
+        if (settings.translation) {
+            injectJavascript("getCurrentElementIndex()");
+        }
+    }, [settings.translation]);
+
     return {applyReadingSettings};
 };
 
