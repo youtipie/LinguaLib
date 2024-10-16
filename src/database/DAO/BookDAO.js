@@ -22,6 +22,13 @@ export default {
     observeById: (id) => books.findAndObserve(id),
     querySearchReadingNowBooks: (searchValue) => queryBooks(false, searchValue),
     querySearchFinishedBooks: (searchValue) => queryBooks(true, searchValue),
+    isExist: async (id) => {
+        try {
+            return await books.find(id);
+        } catch (err) {
+            return false;
+        }
+    },
     batchAddBooks: async (booksData, folder) => {
         await database.write(async () => {
             const newBooks = booksData.map(bookData =>

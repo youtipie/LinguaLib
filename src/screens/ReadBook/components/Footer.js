@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
         bottom: 0,
         width: "100%",
         backgroundColor: colors.primary200,
-        zIndex: 1000,
+        zIndex: 10005,
         paddingVertical: verticalScale(10)
     },
     text: {

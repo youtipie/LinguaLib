@@ -52,12 +52,6 @@ const Settings = ({navigation}) => {
                     onChange={handleOnChange(appSettingsFields.screenShutdownDelay)}
                 />
                 <SectionItemWithSwitch
-                    defaultValue={settings.animations}
-                    text="Animations"
-                    subtext="Show the animations when changing pages"
-                    onChange={handleOnChange(appSettingsFields.animations)}
-                />
-                <SectionItemWithSwitch
                     defaultValue={settings.volumeButtons}
                     text="Volume buttons"
                     subtext="Use the volume buttons to turn pages. Volume down - previous page, volume up - next page"
@@ -87,12 +81,6 @@ const Settings = ({navigation}) => {
                     })}
                     text="Target language"
                     subtext={`Chosen: ${settings.targetLanguage}`}
-                />
-                <SectionItemWithSwitch
-                    defaultValue={settings.backup}
-                    text="Backup"
-                    subtext="By default, the original text in your books is replaced by the translated text. Turn this option on to make a backup copy of the original book."
-                    onChange={handleOnChange(appSettingsFields.backup)}
                 />
             </Section>
 

@@ -4,13 +4,12 @@ import {colorSchemeOptions, fontOptions, textAlignmentOptions} from "../../const
 const initialState = {
     appSettings: {
         openBookOnStartUp: false,
+        lastOpenedBook: null,
         fullScreenMode: false,
         screenShutdownDelay: false,
-        animations: false,
         volumeButtons: false,
         translatingEngine: "Google Translate",
         targetLanguage: "uk",
-        backup: false,
         language: "en",
     },
     readingSettings: {
@@ -28,13 +27,12 @@ const initialState = {
 
 export const appSettingsFields = {
     openBookOnStartUp: "openBookOnStartUp",
+    lastOpenedBook: "lastOpenedBook",
     fullScreenMode: "fullScreenMode",
     screenShutdownDelay: "screenShutdownDelay",
-    animations: "animations",
     volumeButtons: "volumeButtons",
     translatingEngine: "translatingEngine",
     targetLanguage: "targetLanguage",
-    backup: "backup",
     language: "language",
 };
 

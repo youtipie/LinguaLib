@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Reader, useReader} from "@epubjs-react-native/core";
-import {StyleSheet, View} from "react-native";
+import {Pressable, StyleSheet, View} from "react-native";
 import {withObservables} from "@nozbe/watermelondb/react";
 import {useFileSystem} from "@epubjs-react-native/expo-file-system";
 import {translateGoogle} from "../../services/translate.service";
@@ -18,18 +18,31 @@ import useBookSettings from "../../hooks/useBookSettings";
 import SectionDAO from "../../database/DAO/SectionDAO";
 import TextElementDAO from "../../database/DAO/TextElementDAO";
 import {revertSpaces} from "../../database/models/TextElement";
-import {useSelector} from "react-redux";
-import {selectAllReadingSettings} from "../../store/reducers/settings";
+import {useDispatch, useSelector} from "react-redux";
+import {
+    appSettingsFields,
+    selectAllAppSettings,
+    selectAllReadingSettings,
+    updateAppSetting
+} from "../../store/reducers/settings";
 import injectedJavascript from "../../constants/injectedJavascript";
 import Constants from "expo-constants";
+import * as NavigationBar from "expo-navigation-bar";
+import {StatusBar} from "expo-status-bar";
+import * as KeepAwake from 'expo-keep-awake';
+import useVolumeButtons from "../../hooks/useVolumeButtons";
 
 // TODO: Refactor))))))))))))))
+// TODO: Bug: Sometimes switching page cause jumping to last page
+//  Reopening book cause this as well
+// TODO: Think up something with handling presses and swipes
 const ReadBook = ({book}) => {
     const [src, setSrc] = useState('');
     const [isLoaded, setIsLoaded] = useState(false);
     const [isOptionsVisible, setIsOptionsVisible] = useState(false);
     const [isSectionsLoading, setIsSectionsLoading] = useState(false);
     const [isTranslating, setIsTranslating] = useState(false);
+    const [isChangePageClicked, setIsChangePageClicked] = useState(false);
     const {applyReadingSettings} = useBookSettings(() => {
         if (isLoaded) {
             setShouldUpdateSettings(true)
@@ -38,17 +51,12 @@ const ReadBook = ({book}) => {
     const [shouldUpdateSettings, setShouldUpdateSettings] = useState(false);
 
     const {translation} = useSelector(selectAllReadingSettings);
+    const appSettings = useSelector(selectAllAppSettings);
+    const dispatch = useDispatch();
 
     // We don't want to rerender book when this changes
     const initialLocationsRef = useRef(book.initialLocations);
     const abortionControllerRef = useRef(null);
-
-    function cancelTranslationLoop() {
-        if (abortionControllerRef.current) {
-            abortionControllerRef.current.abort();
-            abortionControllerRef.current = null;
-        }
-    }
 
     const {showModal} = useModal();
     const {
@@ -61,6 +69,10 @@ const ReadBook = ({book}) => {
         locations,
         theme
     } = useReader();
+
+    if (appSettings.volumeButtons) {
+        useVolumeButtons(nextPage, prevPage);
+    }
 
     async function translate(textElementsArray) {
         if (textElementsArray.length < 1) {
@@ -121,6 +133,13 @@ const ReadBook = ({book}) => {
         setIsTranslating(true);
         await translateLoop();
         goToLocation(book.cfiLocation); // May cause bugs. But not for now
+    }
+
+    function cancelTranslationLoop() {
+        if (abortionControllerRef.current) {
+            abortionControllerRef.current.abort();
+            abortionControllerRef.current = null;
+        }
     }
 
     async function getSrc(uri) {
@@ -185,6 +204,16 @@ const ReadBook = ({book}) => {
             page = book.page + 1;
         }
         await book.changeCurrentPage(page, page / book.totalPages);
+    }
+
+    function nextPage() {
+        goNext();
+        handlePageChange("next");
+    }
+
+    function prevPage() {
+        goPrevious();
+        handlePageChange("prev");
     }
 
     function finishLoading() {
@@ -277,11 +306,27 @@ const ReadBook = ({book}) => {
 
     useEffect(() => {
         !src && getSrc(book.uri);
+        dispatch(updateAppSetting({value: book.id, name: appSettingsFields.lastOpenedBook}));
+        if (appSettings.screenShutdownDelay) {
+            KeepAwake.activateKeepAwakeAsync();
+            return () => {
+                KeepAwake.deactivateKeepAwake();
+            }
+        }
     }, []);
 
     useEffect(() => {
+        if (appSettings.fullScreenMode) {
+            NavigationBar.setBehaviorAsync('overlay-swipe')
+            NavigationBar.setVisibilityAsync("hidden");
+        } else {
+            NavigationBar.setVisibilityAsync("visible");
+        }
 
-    }, []);
+        return () => {
+            NavigationBar.setVisibilityAsync("visible");
+        }
+    }, [appSettings])
 
     const progressBar = <ProgressBar
         containerStyle={{...(!isOptionsVisible && styles.progressBarWrapper), ...styles.progressBarContainer}}
@@ -294,6 +339,7 @@ const ReadBook = ({book}) => {
 
     return (
         <View style={{flex: 1, backgroundColor: theme.body.background, paddingTop: Constants.statusBarHeight}}>
+            {appSettings.fullScreenMode && <StatusBar hidden={true} translucent/>}
             {(!isLoaded || isSectionsLoading) &&
                 <View
                     style={styles.spinnerContainer}
@@ -332,7 +378,12 @@ const ReadBook = ({book}) => {
                                 goPrevious();
                             }
                         }}
-                        onSingleTap={() => setIsOptionsVisible(!isOptionsVisible)}
+                        onSingleTap={() => {
+                            if (!isChangePageClicked) {
+                                setIsOptionsVisible(!isOptionsVisible);
+                            }
+                            setIsChangePageClicked(false);
+                        }}
                         onSwipeLeft={() => handlePageChange("next")}
                         onSwipeRight={() => handlePageChange("prev")}
                         injectedJavascript={injectedJavascript}
@@ -346,6 +397,18 @@ const ReadBook = ({book}) => {
                     }
                 </>
             }
+            <View
+                pointerEvents="auto"
+                style={styles.clickCatcher}
+            ></View>
+            <Pressable onPress={() => {
+                setIsChangePageClicked(true);
+                prevPage();
+            }} style={styles.leftButton}/>
+            <Pressable onPress={() => {
+                setIsChangePageClicked(true);
+                nextPage();
+            }} style={styles.rightButton}/>
         </View>
     );
 };
@@ -371,5 +434,26 @@ const styles = StyleSheet.create({
         ...StyleSheet.absoluteFillObject,
         backgroundColor: colors.primary200,
         zIndex: 10000
+    },
+    clickCatcher: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: "transparent",
+        zIndex: 10000
+    },
+    leftButton: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        bottom: 0,
+        width: "15%",
+        zIndex: 10001
+    },
+    rightButton: {
+        position: "absolute",
+        top: 0,
+        right: 0,
+        bottom: 0,
+        width: "15%",
+        zIndex: 10001
     }
 });

@@ -21,7 +21,8 @@
       "favicon": "./assets/icon.png"
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      "./plugins/withAndroidDisplayCutout"
     ],
     "extra": {
       "eas": {

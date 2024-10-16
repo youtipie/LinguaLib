@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
         width: "100%",
         paddingHorizontal: horizontalScale(15),
         backgroundColor: colors.primary200,
-        zIndex: 1000
+        zIndex: 10005
     },
     upperContainer: {
         flexDirection: "row",
