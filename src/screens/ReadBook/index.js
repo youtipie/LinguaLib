@@ -3,7 +3,7 @@ import {Reader, useReader} from "@epubjs-react-native/core";
 import {Pressable, StyleSheet, View} from "react-native";
 import {withObservables} from "@nozbe/watermelondb/react";
 import {useFileSystem} from "@epubjs-react-native/expo-file-system";
-import {translateGoogle} from "../../services/translate.service";
+import {translateText} from "../../services/translate.service";
 import escapeString from "../../utils/escapeString";
 import tempCopyToCache from "../../utils/tempCopyToCache";
 import BookDAO from "../../database/DAO/BookDAO";
@@ -108,7 +108,7 @@ const ReadBook = ({book}) => {
                         }
 
                         try {
-                            const translatedText = await translateGoogle(textChunk.map(element => revertSpaces(element.content)))
+                            const translatedText = await translateText(textChunk.map(element => revertSpaces(element.content)), appSettings.targetLanguage, appSettings.translatingEngine)
                             for (let i = 0; i < translatedText.length; i++) {
                                 const sanitizedContent = await textChunk[i].changeContent(translatedText[i]);
                                 injectJavascript(`replaceTextElementByIndex("${escapeString(sanitizedContent)}", ${textChunk[i].index})`);

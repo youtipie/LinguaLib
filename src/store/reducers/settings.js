@@ -25,6 +25,15 @@ const initialState = {
     }
 };
 
+export const translatingEngines = {
+    googleTranslate: "Google Translate"
+}
+
+export const UILanguages = {
+    en: "English",
+    uk: "Ukrainian"
+}
+
 export const appSettingsFields = {
     openBookOnStartUp: "openBookOnStartUp",
     lastOpenedBook: "lastOpenedBook",

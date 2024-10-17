@@ -7,7 +7,13 @@ import Section from "./compontens/Section";
 import SectionItemWithSwitch from "./compontens/SectionItemWithSwitch";
 import SectionItem from "./compontens/SectionItem";
 import {useDispatch, useSelector} from "react-redux";
-import {selectAllAppSettings, appSettingsFields, updateAppSetting} from "../../store/reducers/settings";
+import {
+    selectAllAppSettings,
+    appSettingsFields,
+    updateAppSetting,
+    translatingEngines, UILanguages
+} from "../../store/reducers/settings";
+import {getLanguages} from "../../services/translate.service";
 
 const Settings = ({navigation}) => {
     const settings = useSelector(selectAllAppSettings);
@@ -26,6 +32,8 @@ const Settings = ({navigation}) => {
     function handleOnChange(fieldName) {
         return (value) => dispatch(updateAppSetting({value, name: fieldName}));
     }
+
+    const targetLanguages = getLanguages(settings.translatingEngine);
 
     return (
         <ScrollView contentContainerStyle={styles.root}>
@@ -64,7 +72,10 @@ const Settings = ({navigation}) => {
                     onPress={() => navigation.navigate("SelectSettings", {
                         title: "Translating engine",
                         description: "Select the translation engine to use for translating text in your books. More engines may be added in the future.",
-                        labels: ["Google Translate", "LinguaLib server"],
+                        data: Object.values(translatingEngines).reduce((ret, value) => {
+                            ret[value] = value;
+                            return ret;
+                        }, {}),
                         defaultValue: settings.translatingEngine,
                         fieldName: appSettingsFields.translatingEngine
                     })}
@@ -75,12 +86,12 @@ const Settings = ({navigation}) => {
                     onPress={() => navigation.navigate("SelectSettings", {
                         title: "Target language",
                         description: "Select the language into which your books will be translated. Please note that this list may differ from one translation engine to another.",
-                        labels: ["Ukrainian", "English"],
+                        data: targetLanguages,
                         defaultValue: settings.targetLanguage,
                         fieldName: appSettingsFields.targetLanguage
                     })}
                     text="Target language"
-                    subtext={`Chosen: ${settings.targetLanguage}`}
+                    subtext={`Chosen: ${targetLanguages[settings.targetLanguage]}`}
                 />
             </Section>
 
@@ -89,12 +100,12 @@ const Settings = ({navigation}) => {
                     onPress={() => navigation.navigate("SelectSettings", {
                         title: "Language",
                         description: "Select the interface language. Please note that this option is not relevant for the translation language. To change the translation language, go to Settings, Translation section",
-                        labels: ["English", "Ukrainian"],
+                        data: UILanguages,
                         defaultValue: settings.language,
                         fieldName: appSettingsFields.language
                     })}
-                    text="Target language"
-                    subtext={`Chosen: ${settings.language}`}
+                    text="UI language"
+                    subtext={`Chosen: ${UILanguages[settings.language]}`}
                 />
                 <SectionItem
                     onPress={visitSupportPage}

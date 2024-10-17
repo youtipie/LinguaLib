@@ -7,7 +7,7 @@ import {useDispatch} from "react-redux";
 import {updateAppSetting} from "../../store/reducers/settings";
 
 const SelectSettings = ({navigation, route}) => {
-    const {title, description, labels, defaultValue, fieldName} = route.params;
+    const {title, description, data, defaultValue, fieldName} = route.params;
     const dispatch = useDispatch();
 
     useLayoutEffect(() => {
@@ -24,7 +24,7 @@ const SelectSettings = ({navigation, route}) => {
         <View style={styles.root}>
             <Text style={styles.description}>{description}</Text>
             <RadioButtonGroup
-                labels={labels}
+                data={Object.entries(data)}
                 defaultValue={defaultValue}
                 onValueChange={onValueChanged}
             />

@@ -1,9 +1,9 @@
 import {useState} from "react";
-import {StyleSheet} from "react-native";
+import {FlatList, StyleSheet} from "react-native";
 import RadioButton from "./RadioButton";
 import {horizontalScale} from "../utils/metrics";
 
-const RadioButtonGroup = ({labels, defaultValue, onValueChange}) => {
+const RadioButtonGroup = ({data, defaultValue, onValueChange}) => {
     const [value, setValue] = useState(defaultValue);
 
     function handleValueChange(newValue) {
@@ -12,17 +12,14 @@ const RadioButtonGroup = ({labels, defaultValue, onValueChange}) => {
     }
 
     return (
-        <>
-            {labels.map(label => (
-                <RadioButton
-                    key={label}
-                    style={styles.button}
-                    label={label}
-                    isSelected={label === value}
-                    onSelect={() => handleValueChange(label)}
-                />
-            ))}
-        </>
+        <FlatList data={data} keyExtractor={(item, index) => index} renderItem={
+            (itemData) => <RadioButton
+                style={styles.button}
+                label={itemData.item[1]}
+                isSelected={itemData.item[0] === value}
+                onSelect={() => handleValueChange(itemData.item[0])}
+            />
+        }/>
     );
 };
 
