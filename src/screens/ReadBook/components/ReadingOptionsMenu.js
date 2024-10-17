@@ -12,6 +12,7 @@ import ReadingOptionSlider from "./ReadingOptionSlider";
 import {useDispatch, useSelector} from "react-redux";
 import {selectAllReadingSettings, readingSettingsFields, updateReadingSetting} from "../../../store/reducers/settings";
 import {colorSchemeOptions, fontOptions, textAlignmentOptions} from "../../../constants/settings";
+import {useTranslation} from "react-i18next";
 
 export const ReadingOptionTypes = {
     SELECT: 1,
@@ -30,33 +31,34 @@ const optionComponents = {
 const ReadingOptionsMenu = ({onClose}) => {
     const settings = useSelector(selectAllReadingSettings);
     const dispatch = useDispatch();
+    const {t} = useTranslation();
 
     const handleOnChange = (fieldName) => (value) => dispatch(updateReadingSetting({value, name: fieldName}));
 
     const options = [
         {
-            label: "Color scheme",
+            label: t("screens.Reading.readingOptions.colorScheme"),
             defaultValue: settings.colorScheme,
             onValueChange: handleOnChange(readingSettingsFields.colorScheme),
             type: ReadingOptionTypes.SELECT,
             options: Object.values(colorSchemeOptions),
         },
         {
-            label: "Font",
+            label: t("screens.Reading.readingOptions.font"),
             defaultValue: settings.font,
             onValueChange: handleOnChange(readingSettingsFields.font),
             type: ReadingOptionTypes.SELECT,
             options: Object.values(fontOptions),
         },
         {
-            label: "Font size",
+            label: t("screens.Reading.readingOptions.fontSize"),
             defaultValue: settings.fontSize,
             onValueChange: handleOnChange(readingSettingsFields.fontSize),
             type: ReadingOptionTypes.INPUT,
             incrementValue: 1,
         },
         {
-            label: "Font boldness",
+            label: t("screens.Reading.readingOptions.fontBoldness"),
             defaultValue: settings.fontBoldness,
             onValueChange: handleOnChange(readingSettingsFields.fontBoldness),
             type: ReadingOptionTypes.SLIDER,
@@ -65,7 +67,7 @@ const ReadingOptionsMenu = ({onClose}) => {
             step: 100,
         },
         {
-            label: "Text indent",
+            label: t("screens.Reading.readingOptions.textIndent"),
             defaultValue: settings.textIndent,
             onValueChange: handleOnChange(readingSettingsFields.textIndent),
             type: ReadingOptionTypes.SLIDER,
@@ -74,27 +76,27 @@ const ReadingOptionsMenu = ({onClose}) => {
             step: 1,
         },
         {
-            label: "Line spacing",
+            label: t("screens.Reading.readingOptions.lineSpacing"),
             defaultValue: settings.lineSpacing,
             onValueChange: handleOnChange(readingSettingsFields.lineSpacing),
             type: ReadingOptionTypes.INPUT,
             incrementValue: 10,
         },
         {
-            label: "Text alignment",
+            label: t("screens.Reading.readingOptions.textAlignment"),
             defaultValue: settings.textAlignment,
             onValueChange: handleOnChange(readingSettingsFields.textAlignment),
             type: ReadingOptionTypes.SELECT,
             options: Object.values(textAlignmentOptions),
         },
         {
-            label: "Line breaks",
+            label: t("screens.Reading.readingOptions.lineBreaks"),
             defaultValue: settings.lineBreaks,
             onValueChange: handleOnChange(readingSettingsFields.lineBreaks),
             type: ReadingOptionTypes.SWITCH,
         },
         {
-            label: "Translation",
+            label: t("screens.Reading.readingOptions.translation"),
             defaultValue: settings.translation,
             onValueChange: handleOnChange(readingSettingsFields.translation),
             type: ReadingOptionTypes.SWITCH,
@@ -124,7 +126,7 @@ const ReadingOptionsMenu = ({onClose}) => {
             }
             options={
                 <View style={styles.optionsWrapper}>
-                    <Text style={styles.title}>Reading Settings</Text>
+                    <Text style={styles.title}>{t("screens.Reading.readingOptions.title")}</Text>
                     {options.map(renderOption)}
                 </View>
             }
@@ -141,6 +143,7 @@ export default ReadingOptionsMenu;
 const styles = StyleSheet.create({
     optionsWrapper: {
         paddingHorizontal: horizontalScale(5),
+        marginBottom: verticalScale(10)
     },
     title: {
         fontSize: moderateScale(16),

@@ -1,0 +1,145 @@
+{
+  "navigation": {
+    "ReadingNow": "Reading Now",
+    "Finished": "Finished reading",
+    "Folders": "Folders",
+    "Settings": "Settings",
+    "About": "About",
+    "Details": "Details"
+  },
+  "utils": {
+    "emptyList": "There is nothing here...",
+    "modal": {
+      "confirmAction": "Confirm action",
+      "continue": "Continue",
+      "cancel": "Cancel"
+    },
+    "hours": "hours"
+  },
+  "screens": {
+    "Details": {
+      "readButton": "Read",
+      "inputPlaceholder": "Enter text",
+      "markRead": "Mark as read",
+      "markUnread": "Mark as unread",
+      "editButton": "Edit",
+      "shareButton": "Share",
+      "restoreButton": "Restore",
+      "deleteButton": "Delete",
+      "modalDelete": "Are you sure you want to delete this book? This action cannot be undone.",
+      "selectLang": "Select language",
+      "fields": {
+        "placeholder": "Enter title",
+        "author": "Author",
+        "annotation": "Annotation",
+        "language": "Original language",
+        "time": "Time spent reading",
+        "progress": {
+          "title": "Reading progress",
+          "of": "of",
+          "pages": "pages"
+        },
+        "location": "Book location"
+      }
+    },
+    "Folders": {
+      "noteModal": {
+        "title": "Note",
+        "content": "Folder name cannot be empty!",
+        "leftButtonText": "Delete folder",
+        "rightButtonText": "Continue"
+      },
+      "deleteModal": {
+        "title": "Confirm action",
+        "content": "Are you sure you want to continue? This folder contains books. If you delete it, all book data (progress, translations) will be deleted.",
+        "leftButtonText": "Cancel",
+        "rightButtonText": "Continue"
+      },
+      "newFolderPlaceholder": "New Folder",
+      "options": {
+        "rename": "Rename",
+        "remove": "Delete"
+      },
+      "addFolder": "Add folder"
+    },
+    "About": {
+      "welcome": "About LinguaLib",
+      "welcomeText": "Welcome to LinguaLib, your gateway to a world of literature without language barriers!\n\nAt LinguaLib, we believe that every book should be accessible to everyone, regardless of language. Our innovative app offers a unique reading experience by seamlessly translating ebooks in the background as you read. This means you can dive into any book in any language, and our app will handle the rest, translating upcoming pages so you can enjoy a smooth, uninterrupted reading journey.",
+      "mission": "Our Mission",
+      "missionText": "Our mission is to bridge the gap between languages and bring the joy of reading to everyone. We understand that language can sometimes be a barrier to exploring new stories and ideas. With LinguaLib, we aim to remove this barrier and open up a world of knowledge, culture, and entertainment to all readers.",
+      "how": "How It Works",
+      "howText": "LinguaLib uses advanced translation technology to translate text as you read. When you open a book, our app begins translating the next few pages in the background, ensuring a smooth and uninterrupted reading experience. Users can choose from different translation engines, allowing them to select the one that best suits their needs and preferences. This feature provides flexibility and accuracy, catering to a variety of languages and dialects."
+    },
+    "Settings": {
+      "urlError": "Don't know how to open this URL:",
+      "chosen": "Chosen",
+      "sections": {
+        "general": {
+          "title": "General",
+          "openBookOnStartUp": {
+            "title": "Open book on start up",
+            "subtitle": "Continue reading the book when the app starts"
+          }
+        },
+        "reading": {
+          "title": "Reading",
+          "fullScreenMode": {
+            "title": "Full screen mode",
+            "subtitle": "Hide navigation panel and status bar"
+          },
+          "screenShutdownDelay": {
+            "title": "Screen shutdown delay",
+            "subtitle": "Leave the screen on for a longer period than the average use of a phone"
+          },
+          "volumeButtons": {
+            "title": "Volume buttons",
+            "subtitle": "Use the volume buttons to turn pages. Volume down - previous page, volume up - next page"
+          }
+        },
+        "translating": {
+          "title": "Translating",
+          "translatingEngine": {
+            "title": "Translating engine",
+            "subtitle": "Select the translation engine to use for translating text in your books. More engines may be added in the future."
+          },
+          "targetLanguage": {
+            "title": "Target language",
+            "subtitle": "Select the language into which your books will be translated. Please note that this list may differ from one translation engine to another."
+          }
+        },
+        "other": {
+          "title": "Other",
+          "language": {
+            "title": "UI language",
+            "subtitle": "Select the interface language. Please note that this option is not relevant for the translation language. To change the translation language, go to Settings, Translation section"
+          },
+          "support": {
+            "title": "Support",
+            "subtitle": "Buy me a coffee ;)"
+          }
+        }
+      }
+    },
+    "Reading": {
+      "enabledSwitch": "Enabled",
+      "readingOptions": {
+        "title": "Reading Settings",
+        "colorScheme": "Color scheme",
+        "font": "Font",
+        "fontSize": "Font size",
+        "fontBoldness": "Font boldness",
+        "textIndent": "Text indent",
+        "lineSpacing": "Line spacing",
+        "textAlignment": "Text alignment",
+        "lineBreaks": "Line breaks",
+        "translation": "Translation"
+      },
+      "errorModal": {
+        "title": "Error",
+        "content": "There is some error occurred. Couldn't load the book. Please try again later."
+      },
+      "translatingProgress": "Translating...",
+      "loadingProgress": "Loading..."
+    }
+  }
+}

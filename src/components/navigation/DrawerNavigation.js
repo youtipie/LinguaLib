@@ -9,18 +9,22 @@ import About from "../../screens/About";
 import HeaderButton from "./HeaderButton";
 import Folders from "../../screens/Folders";
 import Settings from "../../screens/Settings";
+import {useTranslation} from "react-i18next";
 
 const Drawer = createDrawerNavigator();
 
-const drawerScreens = [
-    {name: 'ReadingNow', title: 'Reading Now', icon: drawerIcons.reading, component: ReadingNow},
-    {name: 'Finished', title: 'Finished reading', icon: drawerIcons.finished, component: FinishedReading},
-    {name: 'Folders', title: 'Folders', icon: drawerIcons.folders, component: Folders},
-    {name: 'Settings', title: 'Settings', icon: drawerIcons.settings, component: Settings},
-    {name: 'About', title: 'About', icon: drawerIcons.about, component: About},
-];
 
 const DrawerNavigation = () => {
+    const {t} = useTranslation();
+
+    const drawerScreens = [
+        {name: 'ReadingNow', title: t("navigation.ReadingNow"), icon: drawerIcons.reading, component: ReadingNow},
+        {name: 'Finished', title: t("navigation.Finished"), icon: drawerIcons.finished, component: FinishedReading},
+        {name: 'Folders', title: t("navigation.Folders"), icon: drawerIcons.folders, component: Folders},
+        {name: 'Settings', title: t("navigation.Settings"), icon: drawerIcons.settings, component: Settings},
+        {name: 'About', title: t("navigation.About"), icon: drawerIcons.about, component: About},
+    ];
+
     return (
         <Drawer.Navigator
             drawerContent={(props) => <DrawerCustomContent {...props} />}

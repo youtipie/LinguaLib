@@ -31,6 +31,7 @@ import * as NavigationBar from "expo-navigation-bar";
 import {StatusBar} from "expo-status-bar";
 import * as KeepAwake from 'expo-keep-awake';
 import useVolumeButtons from "../../hooks/useVolumeButtons";
+import {useTranslation} from "react-i18next";
 
 // TODO: Refactor))))))))))))))
 // TODO: Bug: Sometimes switching page cause jumping to last page
@@ -53,6 +54,7 @@ const ReadBook = ({book}) => {
     const {translation} = useSelector(selectAllReadingSettings);
     const appSettings = useSelector(selectAllAppSettings);
     const dispatch = useDispatch();
+    const {t} = useTranslation();
 
     // We don't want to rerender book when this changes
     const initialLocationsRef = useRef(book.initialLocations);
@@ -149,8 +151,8 @@ const ReadBook = ({book}) => {
         } catch (e) {
             console.error(e);
             showModal(
-                "Error",
-                "There is some error occurred. Couldn't load the book. Please try again later."
+                t("screens.Reading.errorModal.title"),
+                t("screens.Reading.errorModal.content")
             )
         }
     }
@@ -345,7 +347,7 @@ const ReadBook = ({book}) => {
                     style={styles.spinnerContainer}
                     pointerEvents="auto"
                 >
-                    <LoadingSpinner progressText="Loading book..."/>
+                    <LoadingSpinner progressText={t("screens.Reading.loadingProgress")}/>
                 </View>
             }
             {isTranslating &&
@@ -356,7 +358,7 @@ const ReadBook = ({book}) => {
                     }}
                     pointerEvents="auto"
                 >
-                    <LoadingSpinner progressText="Translating..."/>
+                    <LoadingSpinner progressText={t("screens.Reading.translatingProgress")}/>
                 </View>}
             {isOptionsVisible && isLoaded &&
                 <Header bookTitle={book.title} onSettingsClose={handleChangeBookSettings}/>
@@ -433,7 +435,7 @@ const styles = StyleSheet.create({
     spinnerContainer: {
         ...StyleSheet.absoluteFillObject,
         backgroundColor: colors.primary200,
-        zIndex: 10000
+        zIndex: 10010
     },
     clickCatcher: {
         ...StyleSheet.absoluteFillObject,

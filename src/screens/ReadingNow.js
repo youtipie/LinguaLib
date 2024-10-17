@@ -1,18 +1,22 @@
 import BookList from "../components/BookList";
-import {useEffect, useRef} from "react";
+import {useEffect} from "react";
 import {withObservables} from "@nozbe/watermelondb/react";
 import useFetchNewBooks from "../hooks/useFetchNewBooks";
 import useHeaderSearch from "../hooks/useHeaderSearch";
 import BookDAO from "../database/DAO/BookDAO";
 import {useDispatch, useSelector} from "react-redux";
-import {appSettingsFields, selectAllAppSettings, updateAppSetting} from "../store/reducers/settings";
+import {appSettingsFields, changeLanguage, selectAllAppSettings, updateAppSetting} from "../store/reducers/settings";
 import bookDAO from "../database/DAO/BookDAO";
 
 
 const ReadingNow = ({navigation, books}) => {
     const fetchNewBooks = useFetchNewBooks();
-    const {openBookOnStartUp, lastOpenedBook} = useSelector(selectAllAppSettings);
+    const {openBookOnStartUp, lastOpenedBook, language} = useSelector(selectAllAppSettings);
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(changeLanguage(language));
+    }, []);
 
     useHeaderSearch({navigation});
 

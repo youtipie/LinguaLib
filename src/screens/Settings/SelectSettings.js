@@ -4,7 +4,7 @@ import {moderateScale, verticalScale} from "../../utils/metrics";
 import {useLayoutEffect} from "react";
 import RadioButtonGroup from "../../UI/RadioButtonGroup";
 import {useDispatch} from "react-redux";
-import {updateAppSetting} from "../../store/reducers/settings";
+import {appSettingsFields, changeLanguage, updateAppSetting} from "../../store/reducers/settings";
 
 const SelectSettings = ({navigation, route}) => {
     const {title, description, data, defaultValue, fieldName} = route.params;
@@ -17,7 +17,11 @@ const SelectSettings = ({navigation, route}) => {
     }, [navigation]);
 
     function onValueChanged(value) {
-        dispatch(updateAppSetting({value, name: fieldName}))
+        if (fieldName === appSettingsFields.language) {
+            dispatch(changeLanguage(value));
+        } else {
+            dispatch(updateAppSetting({value, name: fieldName}))
+        }
     }
 
     return (

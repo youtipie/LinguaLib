@@ -8,11 +8,13 @@ import {horizontalScale, moderateScale, verticalScale} from "../../../utils/metr
 import MenuItem from "../../../components/Menu/MenuItem";
 import DetailsItem from "./DetailsItem";
 import {languageIconList} from "../../../utils/languageManager";
+import {useTranslation} from "react-i18next";
 
 
 const LanguageSelectMenu = ({defaultValue, onSelect}) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [selectedValue, setSelectedValue] = useState(defaultValue || "Select language");
+    const [selectedValue, setSelectedValue] = useState(defaultValue || t("screens.Details.selectLang"));
+    const {t} = useTranslation();
 
     function handleSelectOption(option) {
         setSelectedValue(option.language)
@@ -33,7 +35,7 @@ const LanguageSelectMenu = ({defaultValue, onSelect}) => {
             renderer={renderers.SlideInMenu}
             toggleIsOpen={() => setIsOpen(prevState => !prevState)}
             trigger={
-                <DetailsItem title="Original language">
+                <DetailsItem title={t("screens.Details.fields.language")}>
                     <View style={{flexDirection: "row", alignItems: "center"}}>
                         <Text
                             style={[commonStyles.detailText, {marginRight: horizontalScale(5)}]}>{selectedValue}</Text>

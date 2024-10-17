@@ -8,12 +8,14 @@ import FolderCard from "./components/FolderCard";
 import {withObservables} from "@nozbe/watermelondb/react";
 import FolderDAO from "../../database/DAO/FolderDAO";
 import useModal from "../../hooks/useModal";
+import {useTranslation} from "react-i18next";
 
 
 // TODO: Remove root folder definition or thinks something to replace it.
 //  FS cannot get access to /downloads or root folder
 const Folders = ({folders}) => {
     const {showModal} = useModal()
+    const {t} = useTranslation();
 
     async function handleAddFolder() {
         const permissions = await StorageAccessFramework.requestDirectoryPermissionsAsync();
@@ -32,7 +34,7 @@ const Folders = ({folders}) => {
             -> folder being added to db
              */
             // TODO: Make idea real or leave as it is
-            await FolderDAO.addFolder("New Folder", uri);
+            await FolderDAO.addFolder(t("screens.Folders.newFolderPlaceholder"), uri);
         } catch (err) {
             console.log(err);
         }
@@ -46,12 +48,12 @@ const Folders = ({folders}) => {
         const result = await folder.delete();
         if (!result) {
             showModal(
-                "Confirm action",
-                "Are you sure you want to continue? This folder contains books. If you delete it, all book data (progress, translations) will be deleted.",
-                "Cancel",
+                t("screens.Folders.deleteModal.title"),
+                t("screens.Folders.deleteModal.content"),
+                t("screens.Folders.deleteModal.leftButtonText"),
                 () => {
                 },
-                "Continue",
+                t("screens.Folders.deleteModal.rightButtonText"),
                 async () => await folder.delete(true),
             );
         }
@@ -73,7 +75,7 @@ const Folders = ({folders}) => {
                     <View style={styles.icon}></View>
                 }
                 content={
-                    <Text style={styles.addText}>Add folder</Text>
+                    <Text style={styles.addText}>{t("screens.Folders.addFolder")}</Text>
                 }
                 rightIcon={
                     <FontAwesomeIcon

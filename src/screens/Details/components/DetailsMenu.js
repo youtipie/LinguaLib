@@ -1,38 +1,44 @@
 import {withObservables} from "@nozbe/watermelondb/react";
 import {useNavigation} from "@react-navigation/native";
-import {moderateScale} from "../../../utils/metrics";
+import {horizontalScale, moderateScale} from "../../../utils/metrics";
 import {colors, commonIcons} from "../../../constants/styles";
 import DrawerIcon from "../../../components/navigation/DrawerIcon";
 import MenuWrapper from "../../../components/Menu/MenuWrapper";
 import MenuItem from "../../../components/Menu/MenuItem";
 import BookDAO from "../../../database/DAO/BookDAO";
 import useModal from "../../../hooks/useModal";
+import {useTranslation} from "react-i18next";
 
 
 const DetailsMenu = ({bookId, book, enterEditMode}) => {
     const navigation = useNavigation();
     const {showModal} = useModal();
+    const {t} = useTranslation();
 
     const options = [
         {
             icon: book.isFinished ? commonIcons.cross : commonIcons.check,
-            label: 'Mark as ' + (book.isFinished ? 'un' : '') + 'read',
+            label: book.isFinished ? t("screens.Details.markUnread") : t("screens.Details.markRead"),
             action: async () => await book.toggleIsFinished()
         },
-        {icon: commonIcons.edit, label: 'Edit', action: enterEditMode},
-        {icon: commonIcons.share, label: 'Share', action: () => console.log(`share${bookId}`)},
-        {icon: commonIcons.restore, label: 'Restore', action: () => console.log(`restore${bookId}`)},
+        {icon: commonIcons.edit, label: t("screens.Details.editButton"), action: enterEditMode},
+        {icon: commonIcons.share, label: t("screens.Details.shareButton"), action: () => console.log(`share${bookId}`)},
+        {
+            icon: commonIcons.restore,
+            label: t("screens.Details.restoreButton"),
+            action: () => console.log(`restore${bookId}`)
+        },
         {
             icon: commonIcons.trash,
-            label: 'Delete',
+            label: t("screens.Details.deleteButton"),
             action: () => {
                 showModal(
-                    "Confirm action",
-                    "Are you sure you want to delete this book? This action cannot be undone.",
-                    "Cancel",
+                    t("utils.modal.confirmAction"),
+                    t("screens.Details.modalDelete"),
+                    t("utils.modal.cancel"),
                     () => {
                     },
-                    "Continue",
+                    t("utils.modal.continue"),
                     async () => {
                         await book.delete();
                         navigation.goBack();
@@ -61,6 +67,7 @@ const DetailsMenu = ({bookId, book, enterEditMode}) => {
                     onSelect={option.action}
                 />
             ))}
+            width={horizontalScale(200)}
             optionsContainerStyle={{backgroundColor: colors.primary100}}
         />
     );

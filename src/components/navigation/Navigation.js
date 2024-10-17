@@ -10,18 +10,22 @@ import ModalProvider from "../ModalProvider";
 import {ReaderProvider} from "@epubjs-react-native/core";
 import MetadataProvider from "../MetadataProvider";
 import {MenuProvider} from "react-native-popup-menu";
+import {useTranslation} from "react-i18next";
 
 const Stack = createStackNavigator();
 
-const stackScreens = [
-    {name: 'Drawer', options: {headerShown: false}, component: DrawerNavigation},
-    {name: 'SelectSettings', options: {}, component: SelectSettings},
-    {name: 'Details', options: {title: 'Details'}, component: Details},
-    {name: 'ReadBook', options: {headerShown: false}, component: ReadBook},
-]
 
 // TODO: Maybe replace all this styling bs with custom header component
 const Navigation = () => {
+    const {t} = useTranslation();
+
+    const stackScreens = [
+        {name: 'Drawer', options: {headerShown: false}, component: DrawerNavigation},
+        {name: 'SelectSettings', options: {}, component: SelectSettings},
+        {name: 'Details', options: {title: t("navigation.Details")}, component: Details},
+        {name: 'ReadBook', options: {headerShown: false}, component: ReadBook},
+    ]
+
     return (
         <NavigationContainer>
             <MenuProvider>

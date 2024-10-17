@@ -14,10 +14,12 @@ import {
     translatingEngines, UILanguages
 } from "../../store/reducers/settings";
 import {getLanguages} from "../../services/translate.service";
+import {useTranslation} from "react-i18next";
 
 const Settings = ({navigation}) => {
     const settings = useSelector(selectAllAppSettings);
     const dispatch = useDispatch();
+    const {t} = useTranslation();
 
     const visitSupportPage = useCallback(async () => {
         const supported = await Linking.canOpenURL(buyMeACoffeeUrl);
@@ -25,7 +27,7 @@ const Settings = ({navigation}) => {
         if (supported) {
             await Linking.openURL(buyMeACoffeeUrl);
         } else {
-            Alert.alert(`Don't know how to open this URL: ${buyMeACoffeeUrl}`);
+            Alert.alert(`${t("screens.Settings.urlError")} ${buyMeACoffeeUrl}`);
         }
     }, [buyMeACoffeeUrl]);
 
@@ -37,41 +39,41 @@ const Settings = ({navigation}) => {
 
     return (
         <ScrollView contentContainerStyle={styles.root}>
-            <Section title="General">
+            <Section title={t("screens.Settings.sections.general.title")}>
                 <SectionItemWithSwitch
                     defaultValue={settings.openBookOnStartUp}
-                    text="Open book on start up"
-                    subtext="Continue reading the book when the app starts"
+                    text={t("screens.Settings.sections.general.openBookOnStartUp.title")}
+                    subtext={t("screens.Settings.sections.general.openBookOnStartUp.subtitle")}
                     onChange={handleOnChange(appSettingsFields.openBookOnStartUp)}
                 />
             </Section>
 
-            <Section title="Reading">
+            <Section title={t("screens.Settings.sections.reading.title")}>
                 <SectionItemWithSwitch
                     defaultValue={settings.fullScreenMode}
-                    text="Full screen mode"
-                    subtext="Hide navigation panel and status bar"
+                    text={t("screens.Settings.sections.reading.fullScreenMode.title")}
+                    subtext={t("screens.Settings.sections.reading.fullScreenMode.subtitle")}
                     onChange={handleOnChange(appSettingsFields.fullScreenMode)}
                 />
                 <SectionItemWithSwitch
                     defaultValue={settings.screenShutdownDelay}
-                    text="Screen shutdown delay"
-                    subtext="Leave the screen on for a longer period than the average use of a phone"
+                    text={t("screens.Settings.sections.reading.screenShutdownDelay.title")}
+                    subtext={t("screens.Settings.sections.reading.screenShutdownDelay.subtitle")}
                     onChange={handleOnChange(appSettingsFields.screenShutdownDelay)}
                 />
                 <SectionItemWithSwitch
                     defaultValue={settings.volumeButtons}
-                    text="Volume buttons"
-                    subtext="Use the volume buttons to turn pages. Volume down - previous page, volume up - next page"
+                    text={t("screens.Settings.sections.reading.volumeButtons.title")}
+                    subtext={t("screens.Settings.sections.reading.volumeButtons.subtitle")}
                     onChange={handleOnChange(appSettingsFields.volumeButtons)}
                 />
             </Section>
 
-            <Section title="Translating">
+            <Section title={t("screens.Settings.sections.translating.title")}>
                 <SectionItem
                     onPress={() => navigation.navigate("SelectSettings", {
-                        title: "Translating engine",
-                        description: "Select the translation engine to use for translating text in your books. More engines may be added in the future.",
+                        title: t("screens.Settings.sections.translating.translatingEngine.title"),
+                        description: t("screens.Settings.sections.translating.translatingEngine.subtitle"),
                         data: Object.values(translatingEngines).reduce((ret, value) => {
                             ret[value] = value;
                             return ret;
@@ -79,38 +81,38 @@ const Settings = ({navigation}) => {
                         defaultValue: settings.translatingEngine,
                         fieldName: appSettingsFields.translatingEngine
                     })}
-                    text="Translating engine"
-                    subtext={`Chosen: ${settings.translatingEngine}`}
+                    text={t("screens.Settings.sections.translating.translatingEngine.title")}
+                    subtext={`${t("screens.Settings.chosen")}: ${settings.translatingEngine}`}
                 />
                 <SectionItem
                     onPress={() => navigation.navigate("SelectSettings", {
-                        title: "Target language",
-                        description: "Select the language into which your books will be translated. Please note that this list may differ from one translation engine to another.",
+                        title: t("screens.Settings.sections.translating.targetLanguage.title"),
+                        description: t("screens.Settings.sections.translating.targetLanguage.subtitle"),
                         data: targetLanguages,
                         defaultValue: settings.targetLanguage,
                         fieldName: appSettingsFields.targetLanguage
                     })}
-                    text="Target language"
-                    subtext={`Chosen: ${targetLanguages[settings.targetLanguage]}`}
+                    text={t("screens.Settings.sections.translating.targetLanguage.title")}
+                    subtext={`${t("screens.Settings.chosen")}: ${targetLanguages[settings.targetLanguage]}`}
                 />
             </Section>
 
-            <Section title="Other">
+            <Section title={t("screens.Settings.sections.other.title")}>
                 <SectionItem
                     onPress={() => navigation.navigate("SelectSettings", {
-                        title: "Language",
-                        description: "Select the interface language. Please note that this option is not relevant for the translation language. To change the translation language, go to Settings, Translation section",
+                        title: t("screens.Settings.sections.other.language.title"),
+                        description: t("screens.Settings.sections.other.language.subtitle"),
                         data: UILanguages,
                         defaultValue: settings.language,
                         fieldName: appSettingsFields.language
                     })}
-                    text="UI language"
-                    subtext={`Chosen: ${UILanguages[settings.language]}`}
+                    text={t("screens.Settings.sections.other.language.title")}
+                    subtext={`${t("screens.Settings.chosen")}: ${UILanguages[settings.language]}`}
                 />
                 <SectionItem
                     onPress={visitSupportPage}
-                    text="Support"
-                    subtext="Buy me a coffee ;)"
+                    text={t("screens.Settings.sections.other.support.title")}
+                    subtext={t("screens.Settings.sections.other.support.subtitle")}
                 />
             </Section>
         </ScrollView>

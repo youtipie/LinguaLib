@@ -1,6 +1,6 @@
 import {horizontalScale, moderateScale} from "../../utils/metrics";
 import DrawerIcon from "./DrawerIcon";
-import {colors, drawerIcons} from "../../constants/styles";
+import {colors} from "../../constants/styles";
 import {Pressable} from "react-native";
 
 const HeaderButton = ({onPress, icon}) => {

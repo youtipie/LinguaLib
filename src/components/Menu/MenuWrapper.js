@@ -1,5 +1,5 @@
 import {Menu, MenuOptions, MenuTrigger} from "react-native-popup-menu";
-import {ScrollView, StyleSheet} from "react-native";
+import {StyleSheet} from "react-native";
 import {moderateScale} from "../../utils/metrics";
 
 const MenuWrapper = ({
@@ -10,8 +10,16 @@ const MenuWrapper = ({
                          toggleIsOpen = null,
                          optionsContainerStyle,
                          renderer,
-                         rendererProps
+                         rendererProps,
+                         width = "auto"
                      }) => {
+    const styles = StyleSheet.create({
+        menuOptions: {
+            padding: moderateScale(5),
+            width: width,
+        },
+    });
+
     if (!toggleIsOpen) {
         toggleIsOpen = () => {
         };
@@ -40,10 +48,3 @@ const MenuWrapper = ({
 };
 
 export default MenuWrapper;
-
-const styles = StyleSheet.create({
-    menuOptions: {
-        padding: moderateScale(5),
-        width: "auto",
-    },
-});

@@ -4,10 +4,12 @@ import {colors} from "../constants/styles";
 import HeaderDetailsEditMenu from "../screens/Details/components/HeaderDetailsEditMenu";
 import HeaderDetailsMenuButton from "../components/navigation/HeaderDetailsMenuButton";
 import {useNavigation} from "@react-navigation/native";
+import {useTranslation} from "react-i18next";
 
 const UseEditBook = ({bookId, form, onSubmit}) => {
     const navigation = useNavigation();
     const [isEditing, setEditing] = useState(false);
+    const {t} = useTranslation();
 
     function handleReadPress() {
         navigation.navigate("ReadBook", {bookId});
@@ -26,7 +28,7 @@ const UseEditBook = ({bookId, form, onSubmit}) => {
                     {
                         !isEditing &&
                         <Pressable style={{marginLeft: "auto"}} onPress={handleReadPress}>
-                            <Text style={[{color: colors.success100}, style]}>Read</Text>
+                            <Text style={[{color: colors.success100}, style]}>{t("screens.Details.readButton")}</Text>
                         </Pressable>
                     }
                 </View>

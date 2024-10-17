@@ -1,5 +1,6 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {colorSchemeOptions, fontOptions, textAlignmentOptions} from "../../constants/settings";
+import i18n from "../../localization/i18n";
 
 const initialState = {
     appSettings: {
@@ -69,11 +70,15 @@ const settingsSlice = createSlice({
             const {name, value} = action.payload;
             state.readingSettings[name] = value;
         },
+        changeLanguage: (state, action) => {
+            state.appSettings.language = action.payload;
+            i18n.changeLanguage(action.payload);
+        }
     }
 });
 
 export const selectAllAppSettings = (state) => state.settings.appSettings;
 export const selectAllReadingSettings = (state) => state.settings.readingSettings;
 
-export const {updateAppSetting, updateReadingSetting} = settingsSlice.actions;
+export const {updateAppSetting, updateReadingSetting, changeLanguage} = settingsSlice.actions;
 export default settingsSlice.reducer;

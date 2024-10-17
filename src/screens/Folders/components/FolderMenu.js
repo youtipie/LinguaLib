@@ -3,11 +3,14 @@ import {moderateScale} from "../../../utils/metrics";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import MenuWrapper from "../../../components/Menu/MenuWrapper";
 import MenuItem from "../../../components/Menu/MenuItem";
+import {useTranslation} from "react-i18next";
 
 const FolderMenu = ({onEdit, onDelete}) => {
+    const {t} = useTranslation();
+
     const options = [
-        {icon: commonIcons.editSquare, label: 'Rename', action: onEdit},
-        {icon: commonIcons.minusSquare, label: 'Remove', action: onDelete},
+        {icon: commonIcons.editSquare, label: t("screens.Folders.options.rename"), action: onEdit},
+        {icon: commonIcons.minusSquare, label: t("screens.Folders.options.remove"), action: onDelete},
     ];
 
     return (

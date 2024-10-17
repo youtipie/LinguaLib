@@ -8,11 +8,13 @@ import CardWithIcons from "../../../UI/CardWithIcons";
 import InputField from "../../../UI/InputField";
 import useModal from "../../../hooks/useModal";
 import {withObservables} from "@nozbe/watermelondb/react";
+import {useTranslation} from "react-i18next";
 
 const FolderCard = ({folder, onEdit, onDelete}) => {
     const [title, setTitle] = useState(folder.title);
     const [isEditing, setEditing] = useState(folder.title.length === 0);
     const {showModal} = useModal();
+    const {t} = useTranslation();
 
     function toggleEdit() {
         setEditing(prev => !prev);
@@ -30,11 +32,11 @@ const FolderCard = ({folder, onEdit, onDelete}) => {
         }
 
         showModal(
-            "Note",
-            "Folder name cannot be empty!",
-            "Delete folder",
+            t("screens.Folders.noteModal.title"),
+            t("screens.Folders.noteModal.content"),
+            t("screens.Folders.noteModal.leftButtonText"),
             onDelete,
-            "Continue",
+            t("screens.Folders.noteModal.rightButtonText"),
         );
     }
 
@@ -57,7 +59,7 @@ const FolderCard = ({folder, onEdit, onDelete}) => {
                                 defaultValue={title}
                                 onChangeText={handleEdit}
                                 autoFocus={true}
-                                placeholder={"New Folder"}
+                                placeholder={t("screens.Folders.newFolderPlaceholder")}
                             />
                             :
                             <Text style={styles.cardTitle} numberOfLines={1} ellipsizeMode={"middle"}>{title}</Text>

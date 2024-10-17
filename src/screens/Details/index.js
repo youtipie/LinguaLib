@@ -12,6 +12,7 @@ import LanguageSelectMenu from "./components/LanguageSelectMenu";
 import UseEditBook from "../../hooks/useEditBook";
 import {compose, withObservables} from "@nozbe/watermelondb/react";
 import BookDAO from "../../database/DAO/BookDAO";
+import {useTranslation} from "react-i18next";
 
 
 const Details = ({book, folder}) => {
@@ -22,6 +23,8 @@ const Details = ({book, folder}) => {
         language: book.language,
         folder: folder
     });
+
+    const {t} = useTranslation();
 
     function updateForm(name, value) {
         setForm(prevState => ({...prevState, [name]: value})
@@ -44,7 +47,7 @@ const Details = ({book, folder}) => {
                             isEditing ?
                                 <InputField
                                     inputStyles={styles.title}
-                                    placeholder="Enter title"
+                                    placeholder={t("screens.Details.fields.placeholder")}
                                     defaultValue={book.title}
                                     onChangeText={(value) => updateForm("title", value)}
                                     multiline={true}
@@ -56,7 +59,7 @@ const Details = ({book, folder}) => {
                 </View>
                 <View style={styles.cardContent}>
                     <DetailsItem
-                        title="Author"
+                        title={t("screens.Details.fields.author")}
                         content={book.author}
                         isEditing={isEditing}
                         defaultValue={book.author}
@@ -64,7 +67,7 @@ const Details = ({book, folder}) => {
                     />
                     {isEditing ?
                         <DetailsItem
-                            title="Annotation"
+                            title={t("screens.Details.fields.annotation")}
                             content={book.description}
                             isEditing={isEditing}
                             defaultValue={book.description}
@@ -74,11 +77,11 @@ const Details = ({book, folder}) => {
                         (
                             book.description.length <= 100 ?
                                 <DetailsItem
-                                    title="Annotation"
+                                    title={t("screens.Details.fields.annotation")}
                                     content={book.description}
                                 />
                                 :
-                                <DetailsItem title="Annotation">
+                                <DetailsItem title={t("screens.Details.fields.annotation")}>
                                     <AnimatedTextExpand
                                         startText={book.description.slice(0, 100)}
                                         endText={book.description.slice(100, book.description.length)}
@@ -95,22 +98,22 @@ const Details = ({book, folder}) => {
                         />
                         :
                         <DetailsItem
-                            title="Original language"
+                            title={t("screens.Details.fields.language")}
                             content={book.language}
                         />
                     }
                     <DetailsItem
-                        title="Time spent reading"
-                        content={minutesToTimeString(book.timeSpent)}
+                        title={t("screens.Details.fields.time")}
+                        content={minutesToTimeString(book.timeSpent, t)}
                     />
                     {book.totalPages > 0 &&
                         <DetailsItem
-                            title="Reading progress"
-                            content={`${book.page} of ${book.totalPages} pages`}
+                            title={t("screens.Details.fields.progress.title")}
+                            content={`${book.page} ${t("screens.Details.fields.progress.of")} ${book.totalPages} ${t("screens.Details.fields.progress.pages")}`}
                         />
                     }
 
-                    <DetailsItem title="Book location">
+                    <DetailsItem title={t("screens.Details.fields.location")}>
                         <View style={styles.folderDetails}>
                             <FontAwesomeIcon
                                 style={styles.folderIcon}

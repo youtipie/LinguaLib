@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
         fontSize: moderateScale(12)
     },
     sectionItemTextWrapper: {
-        width: "90%"
+        width: "85%"
     },
     button: {
         marginLeft: "auto"

@@ -2,8 +2,11 @@ import {StyleSheet, Text, View} from "react-native";
 import {colors, commonStyles, fonts} from "../../../constants/styles";
 import {moderateScale, verticalScale} from "../../../utils/metrics";
 import InputField from "../../../UI/InputField";
+import {useTranslation} from "react-i18next";
 
 const DetailsItem = ({title, content, children, isEditing, defaultValue, onChangeText}) => {
+    const {t} = useTranslation();
+
     let itemContent = <Text style={commonStyles.detailText}>{content}</Text>;
 
     if (children) {
@@ -14,7 +17,7 @@ const DetailsItem = ({title, content, children, isEditing, defaultValue, onChang
         itemContent = (
             <InputField
                 inputStyles={commonStyles.detailText}
-                placeholder="Enter text"
+                placeholder={t("screens.Details.inputPlaceholder")}
                 defaultValue={defaultValue}
                 onChangeText={onChangeText}
                 multiline={true}

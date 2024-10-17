@@ -12,11 +12,13 @@ import {colors, fonts} from "../constants/styles";
 import {moderateScale, verticalScale} from "../utils/metrics";
 import useFetchNewBooks from "../hooks/useFetchNewBooks";
 import {useState} from "react";
+import {useTranslation} from "react-i18next";
 
 
 const BookList = ({books, isAbleToFetchNewBooks = false}) => {
     const fetchNewBooks = useFetchNewBooks();
     const [refreshing, setRefreshing] = useState(false);
+    const {t} = useTranslation();
 
     async function handleRefresh() {
         if (isAbleToFetchNewBooks) {
@@ -46,7 +48,7 @@ const BookList = ({books, isAbleToFetchNewBooks = false}) => {
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh}/>}
                 ListEmptyComponent={
                     <View style={styles.emptyWrapper}>
-                        <Text style={styles.emptyText}>There is nothing here...</Text>
+                        <Text style={styles.emptyText}>{t("utils.emptyList")}</Text>
                     </View>
                 }
             />
