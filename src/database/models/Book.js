@@ -59,6 +59,13 @@ export default class Book extends Model {
     }
 
     @writer
+    async updateTimeSpent(timeToAdd) {
+        await this.update(book => {
+            book.timeSpent += timeToAdd;
+        })
+    }
+
+    @writer
     async changeTotalPages(totalPages) {
         await this.update(book => {
             book.totalPages = totalPages;

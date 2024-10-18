@@ -32,6 +32,7 @@ import {StatusBar} from "expo-status-bar";
 import * as KeepAwake from 'expo-keep-awake';
 import useVolumeButtons from "../../hooks/useVolumeButtons";
 import {useTranslation} from "react-i18next";
+import useTrackTime from "../../hooks/useTrackTime";
 
 // TODO: Refactor))))))))))))))
 // TODO: Bug: Sometimes switching page cause jumping to last page
@@ -71,6 +72,8 @@ const ReadBook = ({book}) => {
         locations,
         theme
     } = useReader();
+
+    useTrackTime((res) => book.updateTimeSpent(res));
 
     if (appSettings.volumeButtons) {
         useVolumeButtons(nextPage, prevPage);
